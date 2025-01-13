@@ -1,6 +1,7 @@
 package world.bentobox.poseidon;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -9,19 +10,19 @@ import java.util.Set;
 
 import org.bukkit.Difficulty;
 import org.bukkit.GameMode;
+import org.bukkit.Material;
 import org.bukkit.block.Biome;
 import org.bukkit.entity.EntityType;
-import org.bukkit.potion.PotionEffectType;
 
+import world.bentobox.bentobox.BentoBox;
 import world.bentobox.bentobox.api.configuration.ConfigComment;
 import world.bentobox.bentobox.api.configuration.ConfigEntry;
 import world.bentobox.bentobox.api.configuration.StoreAt;
 import world.bentobox.bentobox.api.configuration.WorldSettings;
 import world.bentobox.bentobox.api.flags.Flag;
 import world.bentobox.bentobox.database.objects.adapters.Adapter;
-import world.bentobox.bentobox.database.objects.adapters.FlagSerializer;
-import world.bentobox.bentobox.database.objects.adapters.FlagSerializer2;
-import world.bentobox.bentobox.database.objects.adapters.PotionEffectListAdapter;
+import world.bentobox.bentobox.database.objects.adapters.FlagBooleanSerializer;
+
 
 /**
  * Settings for Poseidon
@@ -29,114 +30,31 @@ import world.bentobox.bentobox.database.objects.adapters.PotionEffectListAdapter
  *
  */
 @ConfigComment("Poseidon Configuration [version]")
-@StoreAt(filename="config.yml", path="addons/Poseidon") // Explicitly call out what name this should have.
+@StoreAt(filename = "config.yml", path = "addons/Poseidon") // Explicitly call out what name this should have.
 public class Settings implements WorldSettings {
 
     // ---------------------------------------------
 
     // Command
     @ConfigComment("Island Command. What command users will run to access their island")
-    @ConfigEntry(path = "acid.command.island")
+    @ConfigEntry(path = "poseidon.command.island")
     private String playerCommandAliases = "po";
 
     @ConfigComment("The island admin command.")
-    @ConfigEntry(path = "acid.command.admin")
+    @ConfigEntry(path = "poseidon.command.admin")
     private String adminCommandAliases = "padmin";
 
     @ConfigComment("The default action for new player command call.")
     @ConfigComment("Sub-command of main player command that will be run on first player command call.")
     @ConfigComment("By default it is sub-command 'create'.")
-    @ConfigEntry(path = "acid.command.new-player-action", since = "1.13.1")
+    @ConfigEntry(path = "poseidon.command.new-player-action")
     private String defaultNewPlayerAction = "create";
 
     @ConfigComment("The default action for player command.")
     @ConfigComment("Sub-command of main player command that will be run on each player command call.")
     @ConfigComment("By default it is sub-command 'go'.")
-    @ConfigEntry(path = "acid.command.default-action", since = "1.13.1")
+    @ConfigEntry(path = "poseidon.command.default-action")
     private String defaultPlayerAction = "go";
-
-    /*      ACID        */
-    @ConfigComment("Acid can damage ops or not")
-    @ConfigEntry(path = "acid.damage-op")
-    private boolean acidDamageOp = false;
-
-    @ConfigComment("Acid can damage chickens - best to leave false because they like to swim")
-    @ConfigEntry(path = "acid.damage-chickens")
-    private boolean acidDamageChickens = false;
-
-    // Damage
-    @ConfigComment("Damage that a player will experience in acid. 10 is half their health typically. 5 would be easier.")
-    @ConfigEntry(path = "acid.damage.acid.player")
-    private int acidDamage = 10;
-
-    @ConfigComment("Damage that monsters experience from acid. Some monsters have armor or natural armor so will take less damage.")
-    @ConfigEntry(path = "acid.damage.acid.monster")
-    private int acidDamageMonster = 5;
-
-    @ConfigComment("Damage animals experience from acid")
-    @ConfigEntry(path = "acid.damage.acid.animal")
-    private int acidDamageAnimal = 1;
-
-    @ConfigComment("Destroy items after this many seconds in acid. 0 = do not destroy items")
-    @ConfigEntry(path = "acid.damage.acid.item")
-    private long acidDestroyItemTime = 0;
-
-    @ConfigComment("Damage from acid rain (and snow, if toggled on).")
-    @ConfigEntry(path = "acid.damage.rain")
-    private int acidRainDamage = 1;
-
-    @ConfigComment("Damage from acid snow")
-    @ConfigEntry(path = "acid.damage.snow")
-    private boolean acidDamageSnow;
-
-    @ConfigComment("Delay before acid or acid rain starts burning")
-    @ConfigComment("This can give time for conduit power to kick in")
-    @ConfigEntry(path = "acid.damage.delay")
-    private long acidDamageDelay = 2;
-
-    @ConfigComment("Potion effects from going into acid water.")
-    @ConfigComment("You can list multiple effects.")
-    @ConfigComment("Available effects are:")
-    @ConfigComment("   BLINDNESS")
-    @ConfigComment("   CONFUSION")
-    @ConfigComment("   HUNGER")
-    @ConfigComment("   POISON")
-    @ConfigComment("   SLOW")
-    @ConfigComment("   SLOW_DIGGING")
-    @ConfigComment("   WEAKNESS")
-    @ConfigEntry(path = "acid.damage.effects")
-    @Adapter(PotionEffectListAdapter.class)
-    private List<PotionEffectType> acidEffects = new ArrayList<>();
-    @ConfigComment("Acid effect duration in seconds")
-    @ConfigEntry(path = "acid.damage.acid-effect-duration", since = "1.11.2")
-    private int acidEffectDuation = 30;
-
-    @ConfigComment("Potion effects from going into acid rain and snow.")
-    @ConfigComment("You can list multiple effects.")
-    @ConfigComment("Available effects are:")
-    @ConfigComment("   BLINDNESS")
-    @ConfigComment("   CONFUSION")
-    @ConfigComment("   HUNGER")
-    @ConfigComment("   POISON")
-    @ConfigComment("   SLOW")
-    @ConfigComment("   SLOW_DIGGING")
-    @ConfigComment("   WEAKNESS")
-    @ConfigEntry(path = "acid.damage.rain-effects", since = "1.9.1")
-    @Adapter(PotionEffectListAdapter.class)
-    private List<PotionEffectType> acidRainEffects = new ArrayList<>();
-
-    @ConfigComment("Rain effect duration in seconds")
-    @ConfigEntry(path = "acid.damage.rain-effect-duration", since = "1.11.2")
-    private int rainEffectDuation = 10;
-
-    @ConfigComment("If player wears a helmet then they will not suffer from acid rain")
-    @ConfigEntry(path = "acid.damage.protection.helmet")
-    private boolean helmetProtection;
-
-    @ConfigComment("If player wears any set of full armor, they will not suffer from acid damage")
-    @ConfigEntry(path = "acid.damage.protection.full-armor")
-    private boolean fullArmorProtection;
-
 
     /*      WORLD       */
     @ConfigComment("Friendly name for this world. Used in admin commands. Must be a single word")
@@ -151,39 +69,38 @@ public class Settings implements WorldSettings {
     @ConfigComment("World difficulty setting - PEACEFUL, EASY, NORMAL, HARD")
     @ConfigComment("Other plugins may override this setting")
     @ConfigEntry(path = "world.difficulty")
-    private Difficulty difficulty;
+    private Difficulty difficulty = Difficulty.NORMAL;
 
     @ConfigComment("Spawn limits. These override the limits set in bukkit.yml")
     @ConfigComment("If set to a negative number, the server defaults will be used")
-    @ConfigEntry(path = "world.spawn-limits.monsters", since = "1.11.2")
+    @ConfigEntry(path = "world.spawn-limits.monsters")
     private int spawnLimitMonsters = -1;
-    @ConfigEntry(path = "world.spawn-limits.animals", since = "1.11.2")
+    @ConfigEntry(path = "world.spawn-limits.animals")
     private int spawnLimitAnimals = -1;
-    @ConfigEntry(path = "world.spawn-limits.water-animals", since = "1.11.2")
+    @ConfigEntry(path = "world.spawn-limits.water-animals")
     private int spawnLimitWaterAnimals = -1;
-    @ConfigEntry(path = "world.spawn-limits.ambient", since = "1.11.2")
+    @ConfigEntry(path = "world.spawn-limits.ambient")
     private int spawnLimitAmbient = -1;
     @ConfigComment("Setting to 0 will disable animal spawns, but this is not recommended. Minecraft default is 400.")
     @ConfigComment("A negative value uses the server default")
-    @ConfigEntry(path = "world.spawn-limits.ticks-per-animal-spawns", since = "1.11.2")
+    @ConfigEntry(path = "world.spawn-limits.ticks-per-animal-spawns")
     private int ticksPerAnimalSpawns = -1;
     @ConfigComment("Setting to 0 will disable monster spawns, but this is not recommended. Minecraft default is 400.")
     @ConfigComment("A negative value uses the server default")
-    @ConfigEntry(path = "world.spawn-limits.ticks-per-monster-spawns", since = "1.11.2")
+    @ConfigEntry(path = "world.spawn-limits.ticks-per-monster-spawns")
     private int ticksPerMonsterSpawns = -1;
 
     @ConfigComment("Radius of island in blocks. (So distance between islands is twice this)")
-    @ConfigComment("Will be rounded up to the nearest 16 blocks.")
     @ConfigComment("It is the same for every dimension : Overworld, Nether and End.")
     @ConfigComment("This value cannot be changed mid-game and the plugin will not start if it is different.")
     @ConfigEntry(path = "world.distance-between-islands", needsReset = true)
-    private int islandDistance = 192;
+    private int islandDistance = 64;
 
     @ConfigComment("Default protection range radius in blocks. Cannot be larger than distance.")
     @ConfigComment("Admins can change protection sizes for players individually using /acid range set <player> <new range>")
     @ConfigComment("or set this permission: poseidon.island.range.<number>")
     @ConfigEntry(path = "world.protection-range", overrideOnChange = true)
-    private int islandProtectionRange = 100;
+    private int islandProtectionRange = 50;
 
     @ConfigComment("Start islands at these coordinates. This is where new islands will start in the")
     @ConfigComment("world. These must be a factor of your island distance, but the plugin will auto")
@@ -204,7 +121,16 @@ public class Settings implements WorldSettings {
     @ConfigComment("Island height - Lowest is 5.")
     @ConfigComment("It is the y coordinate of the bedrock block in the schem.")
     @ConfigEntry(path = "world.island-height")
-    private int islandHeight = 50;
+    private int islandHeight = 30;
+    
+    @ConfigComment("The number of concurrent islands a player can have in the world")
+    @ConfigComment("A value of 0 will use the BentoBox config.yml default")
+    @ConfigEntry(path = "world.concurrent-islands")
+    private int concurrentIslands = 0;
+
+    @ConfigComment("Disallow players to have other islands if they are in a team.")
+    @ConfigEntry(path = "world.disallow-team-member-islands")
+    boolean disallowTeamMemberIslands = true;
 
     @ConfigComment("Use your own world generator for this world.")
     @ConfigComment("In this case, the plugin will not generate anything.")
@@ -214,7 +140,31 @@ public class Settings implements WorldSettings {
     @ConfigComment("Sea height (don't changes this mid-game unless you delete the world)")
     @ConfigComment("Minimum is 0, which means you are playing Skyblock!")
     @ConfigEntry(path = "world.sea-height")
-    private int seaHeight = 54;
+    private int seaHeight = 70;
+    
+    @ConfigComment("Water block. This should usually stay as WATER, but may be LAVA for fun")
+    @ConfigEntry(path = "world.water-block", needsReset = true)
+    private Material waterBlock = Material.WATER;
+    
+    @ConfigComment("Ocean Floor")
+    @ConfigComment("This creates an ocean floor environment, with vanilla elements.")
+    @ConfigEntry(path = "world.ocean-floor", needsReset = true)
+    private boolean oceanFloor = true;
+
+    @ConfigComment("Structures")
+    @ConfigComment("This creates an vanilla structures in the worlds.")
+    @ConfigEntry(path = "world.make-structures", needsReset = true)
+    private boolean makeStructures = true;
+
+    @ConfigComment("Caves")
+    @ConfigComment("This creates an vanilla caves in the worlds.")
+    @ConfigEntry(path = "world.make-caves", needsReset = true)
+    private boolean makeCaves = true;
+
+    @ConfigComment("Decorations")
+    @ConfigComment("This creates an vanilla decorations in the worlds.")
+    @ConfigEntry(path = "world.make-decorations", needsReset = true)
+    private boolean makeDecorations = true;
 
     @ConfigComment("Maximum number of islands in the world. Set to -1 or 0 for unlimited. ")
     @ConfigComment("If the number of islands is greater than this number, no new island will be created.")
@@ -229,6 +179,12 @@ public class Settings implements WorldSettings {
     @ConfigComment("The default biome for the overworld")
     @ConfigEntry(path = "world.default-biome")
     private Biome defaultBiome = Biome.WARM_OCEAN;
+    @ConfigComment("The default biome for the nether world (this may affect what mobs can spawn)")
+    @ConfigEntry(path = "world.default-nether-biome")
+    private Biome defaultNetherBiome = Biome.NETHER_WASTES;
+    @ConfigComment("The default biome for the end world (this may affect what mobs can spawn)")
+    @ConfigEntry(path = "world.default-end-biome")
+    private Biome defaultEndBiome = Biome.THE_END;
 
     @ConfigComment("The maximum number of players a player can ban at any one time in this game mode.")
     @ConfigComment("The permission poseidon.ban.maxlimit.X where X is a number can also be used per player")
@@ -243,22 +199,26 @@ public class Settings implements WorldSettings {
     @ConfigComment("Note that with a standard nether all players arrive at the same portal and entering a")
     @ConfigComment("portal will return them back to their islands.")
     @ConfigEntry(path = "world.nether.generate")
-    private boolean netherGenerate = true;
+    private boolean netherGenerate = false;
 
     @ConfigComment("Islands in Nether. Change to false for standard vanilla nether.")
     @ConfigEntry(path = "world.nether.islands", needsReset = true)
-    private boolean netherIslands = true;
+    private boolean netherIslands = false;
 
     @ConfigComment("Sea height in Nether. Only operates if nether islands is true.")
     @ConfigComment("Changing mid-game will cause problems!")
     @ConfigEntry(path = "world.nether.sea-height", needsReset = true)
     private int netherSeaHeight = 54;
+    
+    @ConfigComment("Water block. This should usually stay as WATER, but may be LAVA for fun")
+    @ConfigEntry(path = "world.nether.water-block", needsReset = true)
+    private Material netherWaterBlock = Material.WATER;
 
     @ConfigComment("Make the nether roof, if false, there is nothing up there")
     @ConfigComment("Change to false if lag is a problem from the generation")
     @ConfigComment("Only applies to islands Nether")
     @ConfigEntry(path = "world.nether.roof")
-    private boolean netherRoof = true;
+    private boolean netherRoof = false;
 
     @ConfigComment("Nether spawn protection radius - this is the distance around the nether spawn")
     @ConfigComment("that will be protected from player interaction (breaking blocks, pouring lava etc.)")
@@ -266,6 +226,12 @@ public class Settings implements WorldSettings {
     @ConfigComment("Only applies to vanilla nether")
     @ConfigEntry(path = "world.nether.spawn-radius")
     private int netherSpawnRadius = 32;
+
+    @ConfigComment("This option indicates if nether portals should be linked via dimensions.")
+    @ConfigComment("Option will simulate vanilla portal mechanics that links portals together")
+    @ConfigComment("or creates a new portal, if there is not a portal in that dimension.")
+    @ConfigEntry(path = "world.nether.create-and-link-portals")
+    private boolean makeNetherPortals = false;
 
     // End
     @ConfigComment("End Nether - if this is false, the end world will not be made and access to")
@@ -280,7 +246,16 @@ public class Settings implements WorldSettings {
     @ConfigComment("Sea height in The End. Only operates if end islands is true.")
     @ConfigComment("Changing mid-game will cause problems!")
     @ConfigEntry(path = "world.end.sea-height", needsReset = true)
-    private int endSeaHeight = 54;
+    private int endSeaHeight = 80;
+    
+    @ConfigComment("Water block. This should usually stay as WATER, but may be LAVA for fun")
+    @ConfigEntry(path = "world.end.water-block", needsReset = true)
+    private Material endWaterBlock = Material.WATER;
+
+    @ConfigComment("This option indicates if obsidian platform in the end should be generated")
+    @ConfigComment("when player enters the end world.")
+    @ConfigEntry(path = "world.end.create-obsidian-platform")
+    private boolean makeEndPortals = false;
 
     @ConfigEntry(path = "world.end.dragon-spawn", experimental = true)
     private boolean dragonSpawn = false;
@@ -300,13 +275,12 @@ public class Settings implements WorldSettings {
     @ConfigComment("The value is the minimum island rank required allowed to do the action")
     @ConfigComment("Ranks are: Visitor = 0, Member = 900, Owner = 1000")
     @ConfigEntry(path = "world.default-island-flags")
-    @Adapter(FlagSerializer.class)
-    private Map<Flag, Integer> defaultIslandFlags = new HashMap<>();
+    private Map<String, Integer> defaultIslandFlagNames = new HashMap<>();
 
     @ConfigComment("These are the default settings for new islands")
     @ConfigEntry(path = "world.default-island-settings")
-    @Adapter(FlagSerializer2.class)
-    private Map<Flag, Integer> defaultIslandSettings = new HashMap<>();
+    @Adapter(FlagBooleanSerializer.class)
+    private Map<String, Integer> defaultIslandSettingNames = new HashMap<>();
 
     @ConfigComment("These settings/flags are hidden from users")
     @ConfigComment("Ops can toggle hiding in-game using SHIFT-LEFT-CLICK on flags in settings")
@@ -334,13 +308,13 @@ public class Settings implements WorldSettings {
     @ConfigComment("Default maximum number of coop rank members per island")
     @ConfigComment("Players can have the poseidon.coop.maxsize.<number> permission to be bigger but")
     @ConfigComment("permission size cannot be less than the default below. ")
-    @ConfigEntry(path = "island.max-coop-size", since = "1.13.0")
+    @ConfigEntry(path = "island.max-coop-size")
     private int maxCoopSize = 4;
 
     @ConfigComment("Default maximum number of trusted rank members per island")
     @ConfigComment("Players can have the poseidon.trust.maxsize.<number> permission to be bigger but")
     @ConfigComment("permission size cannot be less than the default below. ")
-    @ConfigEntry(path = "island.max-trusted-size", since = "1.13.0")
+    @ConfigEntry(path = "island.max-trusted-size")
     private int maxTrustSize = 4;
 
     @ConfigComment("Default maximum number of homes a player can have. Min = 1")
@@ -464,6 +438,11 @@ public class Settings implements WorldSettings {
     @ConfigEntry(path = "island.create-island-on-first-login.abort-on-logout")
     private boolean createIslandOnFirstLoginAbortOnLogout = true;
 
+    @ConfigComment("Toggles whether the player should be teleported automatically to his island when it is created.")
+    @ConfigComment("If set to false, the player will be told his island is ready but will have to teleport to his island using the command.")
+    @ConfigEntry(path = "island.teleport-player-to-island-when-created")
+    private boolean teleportPlayerToIslandUponIslandCreation = true;
+
     @ConfigComment("Create Nether or End islands if they are missing when a player goes through a portal.")
     @ConfigComment("Nether and End islands are usually pasted when a player makes their island, but if they are")
     @ConfigComment("missing for some reason, you can switch this on.")
@@ -472,21 +451,58 @@ public class Settings implements WorldSettings {
     private boolean pasteMissingIslands = false;
 
     // Commands
-    @ConfigComment("List of commands to run when a player joins.")
+    @ConfigComment("List of commands to run when a player joins an island or creates one.")
+    @ConfigComment("These commands are run by the console, unless otherwise stated using the [SUDO] prefix,")
+    @ConfigComment("in which case they are executed by the player.")
+    @ConfigComment("")
+    @ConfigComment("Available placeholders for the commands are the following:")
+    @ConfigComment("   * [name]: name of the player")
+    @ConfigComment("")
+    @ConfigComment("Here are some examples of valid commands to execute:")
+    @ConfigComment("   * \"[SUDO] bbox version\"")
+    @ConfigComment("   * \"acid deaths set [player] 0\"")
     @ConfigEntry(path = "island.commands.on-join")
     private List<String> onJoinCommands = new ArrayList<>();
 
-    @ConfigComment("list of commands to run when a player leaves.")
+    @ConfigComment("List of commands to run when a player leaves an island, resets his island or gets kicked from it.")
+    @ConfigComment("These commands are run by the console, unless otherwise stated using the [SUDO] prefix,")
+    @ConfigComment("in which case they are executed by the player.")
+    @ConfigComment("")
+    @ConfigComment("Available placeholders for the commands are the following:")
+    @ConfigComment("   * [name]: name of the player")
+    @ConfigComment("")
+    @ConfigComment("Here are some examples of valid commands to execute:")
+    @ConfigComment("   * '[SUDO] bbox version'")
+    @ConfigComment("   * 'acid deaths set [player] 0'")
+    @ConfigComment("")
+    @ConfigComment("Note that player-executed commands might not work, as these commands can be run with said player being offline.")
     @ConfigEntry(path = "island.commands.on-leave")
     private List<String> onLeaveCommands = new ArrayList<>();
 
+    @ConfigComment("List of commands that should be executed when the player respawns after death if Flags.ISLAND_RESPAWN is true.")
+    @ConfigComment("These commands are run by the console, unless otherwise stated using the [SUDO] prefix,")
+    @ConfigComment("in which case they are executed by the player.")
+    @ConfigComment("")
+    @ConfigComment("Available placeholders for the commands are the following:")
+    @ConfigComment("   * [name]: name of the player")
+    @ConfigComment("")
+    @ConfigComment("Here are some examples of valid commands to execute:")
+    @ConfigComment("   * '[SUDO] bbox version'")
+    @ConfigComment("   * 'bsbadmin deaths set [player] 0'")
+    @ConfigComment("")
+    @ConfigComment("Note that player-executed commands might not work, as these commands can be run with said player being offline.")
+    @ConfigEntry(path = "island.commands.on-respawn")
+    private List<String> onRespawnCommands = new ArrayList<>();
+
     // Sethome
+    @ConfigComment("Allow setting home in the nether. Only available on nether islands, not vanilla nether.")
     @ConfigEntry(path = "island.sethome.nether.allow")
     private boolean allowSetHomeInNether = true;
 
     @ConfigEntry(path = "island.sethome.nether.require-confirmation")
     private boolean requireConfirmationToSetHomeInNether = true;
 
+    @ConfigComment("Allow setting home in the end. Only available on end islands, not vanilla end.")
     @ConfigEntry(path = "island.sethome.the-end.allow")
     private boolean allowSetHomeInTheEnd = true;
 
@@ -522,6 +538,11 @@ public class Settings implements WorldSettings {
     @ConfigEntry(path = "protection.geo-limit-settings")
     private List<String> geoLimitSettings = new ArrayList<>();
 
+    @ConfigComment("Poseidon blocked mobs.")
+    @ConfigComment("List of mobs that should not spawn in Poseidon.")
+    @ConfigEntry(path = "protection.block-mobs")
+    private List<String> mobLimitSettings = new ArrayList<>();
+
     // Invincible visitor settings
     @ConfigComment("Invincible visitors. List of damages that will not affect visitors.")
     @ConfigComment("Make list blank if visitors should receive all damages")
@@ -532,50 +553,6 @@ public class Settings implements WorldSettings {
     @ConfigComment("These settings should not be edited")
     @ConfigEntry(path = "do-not-edit-these-settings.reset-epoch")
     private long resetEpoch = 0;
-
-
-    /**
-     * @return the acidDamage
-     */
-    public int getAcidDamage() {
-        return acidDamage;
-    }
-    /**
-     * @return the acidDamageAnimal
-     */
-    public int getAcidDamageAnimal() {
-        return acidDamageAnimal;
-    }
-    /**
-     * @return the acidDamageDelay
-     */
-    public long getAcidDamageDelay() {
-        return acidDamageDelay;
-    }
-    /**
-     * @return the acidDamageMonster
-     */
-    public int getAcidDamageMonster() {
-        return acidDamageMonster;
-    }
-    /**
-     * @return the acidDestroyItemTime
-     */
-    public long getAcidDestroyItemTime() {
-        return acidDestroyItemTime;
-    }
-    /**
-     * @return the acidEffects
-     */
-    public List<PotionEffectType> getAcidEffects() {
-        return acidEffects;
-    }
-    /**
-     * @return the acidRainDamage
-     */
-    public int getAcidRainDamage() {
-        return acidRainDamage;
-    }
 
     @Override
     public int getBanLimit() {
@@ -608,20 +585,47 @@ public class Settings implements WorldSettings {
     public GameMode getDefaultGameMode() {
         return defaultGameMode;
     }
+
+
+    /**
+     * @return the defaultIslandFlags
+     * @since 1.21.0
+     */
+    @Override
+    public Map<String, Integer> getDefaultIslandFlagNames()
+    {
+        return defaultIslandFlagNames;
+    }
+
+
+    /**
+     * @return the defaultIslandSettings
+     * @since 1.21.0
+     */
+    @Override
+    public Map<String, Integer> getDefaultIslandSettingNames()
+    {
+        return defaultIslandSettingNames;
+    }
+
     /**
      * @return the defaultIslandProtection
+     * @deprecated since 1.21
      */
     @Override
     public Map<Flag, Integer> getDefaultIslandFlags() {
-        return defaultIslandFlags;
+        return Collections.emptyMap();
     }
+
     /**
      * @return the defaultIslandSettings
+     * @deprecated since 1.21
      */
     @Override
     public Map<Flag, Integer> getDefaultIslandSettings() {
-        return defaultIslandSettings;
+        return Collections.emptyMap();
     }
+
     /**
      * @return the difficulty
      */
@@ -807,18 +811,6 @@ public class Settings implements WorldSettings {
         return worldName;
     }
     /**
-     * @return the acidDamageChickens
-     */
-    public boolean isAcidDamageChickens() {
-        return acidDamageChickens;
-    }
-    /**
-     * @return the acidDamageOp
-     */
-    public boolean isAcidDamageOp() {
-        return acidDamageOp;
-    }
-    /**
      * @return the allowSetHomeInNether
      */
     @Override
@@ -858,18 +850,6 @@ public class Settings implements WorldSettings {
     @Override
     public boolean isEndIslands() {
         return endIslands;
-    }
-    /**
-     * @return the fullArmorProtection
-     */
-    public boolean isFullArmorProtection() {
-        return fullArmorProtection;
-    }
-    /**
-     * @return the helmetProtection
-     */
-    public boolean isHelmetProtection() {
-        return helmetProtection;
     }
     /**
      * @return the kickedKeepInventory
@@ -1016,63 +996,11 @@ public class Settings implements WorldSettings {
         return true;
     }
     /**
-     * @param acidDamage the acidDamage to set
-     */
-    public void setAcidDamage(int acidDamage) {
-        this.acidDamage = acidDamage;
-    }
-    /**
-     * @param acidDamageAnimal the acidDamageAnimal to set
-     */
-    public void setAcidDamageAnimal(int acidDamageAnimal) {
-        this.acidDamageAnimal = acidDamageAnimal;
-    }
-    /**
-     * @param acidDamageChickens the acidDamageChickens to set
-     */
-    public void setAcidDamageChickens(boolean acidDamageChickens) {
-        this.acidDamageChickens = acidDamageChickens;
-    }
-    /**
-     * @param acidDamageDelay the acidDamageDelay to set
-     */
-    public void setAcidDamageDelay(long acidDamageDelay) {
-        this.acidDamageDelay = acidDamageDelay;
-    }
-    /**
-     * @param acidDamageMonster the acidDamageMonster to set
-     */
-    public void setAcidDamageMonster(int acidDamageMonster) {
-        this.acidDamageMonster = acidDamageMonster;
-    }
-    /**
-     * @param acidDamageOp the acidDamageOp to set
-     */
-    public void setAcidDamageOp(boolean acidDamageOp) {
-        this.acidDamageOp = acidDamageOp;
-    }
-    /**
-     * @param acidDestroyItemTime the acidDestroyItemTime to set
-     */
-    public void setAcidDestroyItemTime(long acidDestroyItemTime) {
-        this.acidDestroyItemTime = acidDestroyItemTime;
-    }
-    /**
-     * @param acidEffects the acidEffects to set
-     */
-    public void setAcidEffects(List<PotionEffectType> acidEffects) {
-        this.acidEffects = acidEffects;
-    }
-    /**
-     * @param acidRainDamage the acidRainDamage to set
-     */
-    public void setAcidRainDamage(int acidRainDamage) {
-        this.acidRainDamage = acidRainDamage;
-    }
-    /**
      * @param adminCommand what you want your admin command to be
      */
-    public void setAdminCommand(String adminCommand) { this.adminCommandAliases = adminCommand; }
+    public void setAdminCommand(String adminCommand) {
+        this.adminCommandAliases = adminCommand;
+    }
     /**
      * @param allowSetHomeInNether the allowSetHomeInNether to set
      */
@@ -1123,14 +1051,14 @@ public class Settings implements WorldSettings {
     }
     /**
      */
-    public void setDefaultIslandFlags(Map<Flag, Integer> defaultIslandFlags) {
-        this.defaultIslandFlags = defaultIslandFlags;
+    public void setDefaultIslandFlagNames(Map<String, Integer> defaultIslandFlags) {
+        this.defaultIslandFlagNames = defaultIslandFlags;
     }
     /**
      * @param defaultIslandSettings the defaultIslandSettings to set
      */
-    public void setDefaultIslandSettings(Map<Flag, Integer> defaultIslandSettings) {
-        this.defaultIslandSettings = defaultIslandSettings;
+    public void setDefaultIslandSettingNames(Map<String, Integer> defaultIslandSettings) {
+        this.defaultIslandSettingNames = defaultIslandSettings;
     }
     /**
      * @param difficulty the difficulty to set
@@ -1164,29 +1092,19 @@ public class Settings implements WorldSettings {
     public void setFriendlyName(String friendlyName) {
         this.friendlyName = friendlyName;
     }
-    /**
-     * @param fullArmorProtection the fullArmorProtection to set
-     */
-    public void setFullArmorProtection(boolean fullArmorProtection) {
-        this.fullArmorProtection = fullArmorProtection;
-    }
+
     /**
      * @param geoLimitSettings the geoLimitSettings to set
      */
     public void setGeoLimitSettings(List<String> geoLimitSettings) {
         this.geoLimitSettings = geoLimitSettings;
     }
-
-    /**
-     * @param helmetProtection the helmetProtection to set
-     */
-    public void setHelmetProtection(boolean helmetProtection) {
-        this.helmetProtection = helmetProtection;
-    }
     /**
      * @param islandCommand what you want your island command to be
      */
-    public void setIslandCommand(String islandCommand) { this.playerCommandAliases = islandCommand; }
+    public void setIslandCommand(String islandCommand) {
+        this.playerCommandAliases = islandCommand;
+    }
 
     /**
      * @param islandDistance the islandDistance to set
@@ -1427,18 +1345,6 @@ public class Settings implements WorldSettings {
         this.worldName = worldName;
     }
     /**
-     * @return the acidDamageSnow
-     */
-    public boolean isAcidDamageSnow() {
-        return acidDamageSnow;
-    }
-    /**
-     * @param acidDamageSnow the acidDamageSnow to set
-     */
-    public void setAcidDamageSnow(boolean acidDamageSnow) {
-        this.acidDamageSnow = acidDamageSnow;
-    }
-    /**
      * @return the deathsResetOnNewIsland
      */
     @Override
@@ -1477,6 +1383,24 @@ public class Settings implements WorldSettings {
     public void setOnLeaveCommands(List<String> onLeaveCommands) {
         this.onLeaveCommands = onLeaveCommands;
     }
+
+    /**
+     * @return the onRespawnCommands
+     */
+    @Override
+    public List<String> getOnRespawnCommands() {
+        return onRespawnCommands;
+    }
+
+    /**
+     * Sets on respawn commands.
+     *
+     * @param onRespawnCommands the on respawn commands
+     */
+    public void setOnRespawnCommands(List<String> onRespawnCommands) {
+        this.onRespawnCommands = onRespawnCommands;
+    }
+
     /**
      * @return the onJoinResetHealth
      */
@@ -1595,48 +1519,6 @@ public class Settings implements WorldSettings {
      */
     public void setPasteMissingIslands(boolean pasteMissingIslands) {
         this.pasteMissingIslands = pasteMissingIslands;
-    }
-
-    /**
-     * Get acid rain potion effects
-     * @return liust of potion effects
-     * @since 1.9.1
-     */
-    public List<PotionEffectType> getAcidRainEffects() {
-        return acidRainEffects;
-    }
-
-    /**
-     *
-     * @param acidRainEffects
-     * @since 1.9.1
-     */
-    public void setAcidRainEffects(List<PotionEffectType> acidRainEffects) {
-        this.acidRainEffects = acidRainEffects;
-    }
-    /**
-     * @return the rainEffectDuation
-     */
-    public int getRainEffectDuation() {
-        return rainEffectDuation;
-    }
-    /**
-     * @param rainEffectDuation the rainEffectDuation to set
-     */
-    public void setRainEffectDuation(int rainEffectDuation) {
-        this.rainEffectDuation = rainEffectDuation;
-    }
-    /**
-     * @return the acidEffectDuation
-     */
-    public int getAcidEffectDuation() {
-        return acidEffectDuation;
-    }
-    /**
-     * @param acidEffectDuation the acidEffectDuation to set
-     */
-    public void setAcidEffectDuation(int acidEffectDuation) {
-        this.acidEffectDuation = acidEffectDuation;
     }
     /**
      * @return the spawnLimitMonsters
@@ -1790,5 +1672,186 @@ public class Settings implements WorldSettings {
      */
     public void setDefaultPlayerAction(String defaultPlayerAction) {
         this.defaultPlayerAction = defaultPlayerAction;
+    }
+    /**
+     * @return the defaultNetherBiome
+     */
+    public Biome getDefaultNetherBiome() {
+        return defaultNetherBiome;
+    }
+    /**
+     * @param defaultNetherBiome the defaultNetherBiome to set
+     */
+    public void setDefaultNetherBiome(Biome defaultNetherBiome) {
+        this.defaultNetherBiome = defaultNetherBiome;
+    }
+    /**
+     * @return the defaultEndBiome
+     */
+    public Biome getDefaultEndBiome() {
+        return defaultEndBiome;
+    }
+    /**
+     * @param defaultEndBiome the defaultEndBiome to set
+     */
+    public void setDefaultEndBiome(Biome defaultEndBiome) {
+        this.defaultEndBiome = defaultEndBiome;
+    }
+    /**
+     * @return the teleportPlayerToIslandUponIslandCreation
+     */
+    @Override
+    public boolean isTeleportPlayerToIslandUponIslandCreation() {
+        return teleportPlayerToIslandUponIslandCreation;
+    }
+    /**
+     * @param teleportPlayerToIslandUponIslandCreation the teleportPlayerToIslandUponIslandCreation to set
+     */
+    public void setTeleportPlayerToIslandUponIslandCreation(boolean teleportPlayerToIslandUponIslandCreation) {
+        this.teleportPlayerToIslandUponIslandCreation = teleportPlayerToIslandUponIslandCreation;
+    }
+    /**
+     * @return the mobLimitSettings
+     */
+    @Override
+    public List<String> getMobLimitSettings() {
+        return mobLimitSettings;
+    }
+    /**
+     * @param mobLimitSettings the mobLimitSettings to set
+     */
+    public void setMobLimitSettings(List<String> mobLimitSettings) {
+        this.mobLimitSettings = mobLimitSettings;
+    }
+
+    /**
+     * @return the makeNetherPortals
+     */
+    @Override
+    public boolean isMakeNetherPortals() {
+        return makeNetherPortals;
+    }
+
+    /**
+     * @return the makeEndPortals
+     */
+    @Override
+    public boolean isMakeEndPortals() {
+        return makeEndPortals;
+    }
+
+    /**
+     * Sets make nether portals.
+     * @param makeNetherPortals the make nether portals
+     */
+    public void setMakeNetherPortals(boolean makeNetherPortals) {
+        this.makeNetherPortals = makeNetherPortals;
+    }
+
+    /**
+     * Sets make end portals.
+     * @param makeEndPortals the make end portals
+     */
+    public void setMakeEndPortals(boolean makeEndPortals) {
+        this.makeEndPortals = makeEndPortals;
+    }
+    public Material getWaterBlock() {
+        return waterBlock;
+    }
+    public void setWaterBlock(Material waterBlock) {
+        this.waterBlock = waterBlock;
+    }
+    public Material getNetherWaterBlock() {
+        return netherWaterBlock;
+    }
+    public void setNetherWaterBlock(Material netherWaterBlock) {
+        this.netherWaterBlock = netherWaterBlock;
+    }
+    public Material getEndWaterBlock() {
+        return endWaterBlock;
+    }
+    public void setEndWaterBlock(Material endWaterBlock) {
+        this.endWaterBlock = endWaterBlock;
+    }
+    public boolean isOceanFloor() {
+        return oceanFloor;
+    }
+    public void setOceanFloor(boolean oceanFloor) {
+        this.oceanFloor = oceanFloor;
+    }
+
+    /**
+     * @return the makeStructures
+     */
+    public boolean isMakeStructures() {
+        return makeStructures;
+    }
+
+    /**
+     * @param makeStructures the makeStructures to set
+     */
+    public void setMakeStructures(boolean makeStructures) {
+        this.makeStructures = makeStructures;
+    }
+
+    /**
+     * @return the makeCaves
+     */
+    public boolean isMakeCaves() {
+        return makeCaves;
+    }
+
+    /**
+     * @param makeCaves the makeCaves to set
+     */
+    public void setMakeCaves(boolean makeCaves) {
+        this.makeCaves = makeCaves;
+    }
+
+    /**
+     * @return the makeDecorations
+     */
+    public boolean isMakeDecorations() {
+        return makeDecorations;
+    }
+
+    /**
+     * @param makeDecorations the makeDecorations to set
+     */
+    public void setMakeDecorations(boolean makeDecorations) {
+        this.makeDecorations = makeDecorations;
+    }
+
+    /**
+     * @return the disallowTeamMemberIslands
+     */
+    @Override
+    public boolean isDisallowTeamMemberIslands() {
+        return disallowTeamMemberIslands;
+    }
+
+    /**
+     * @param disallowTeamMemberIslands the disallowTeamMemberIslands to set
+     */
+    public void setDisallowTeamMemberIslands(boolean disallowTeamMemberIslands) {
+        this.disallowTeamMemberIslands = disallowTeamMemberIslands;
+    }
+
+    /**
+     * @return the concurrentIslands
+     */
+    @Override
+    public int getConcurrentIslands() {
+        if (concurrentIslands <= 0) {
+            return BentoBox.getInstance().getSettings().getIslandNumber();
+        }
+        return concurrentIslands;
+    }
+
+    /**
+     * @param concurrentIslands the concurrentIslands to set
+     */
+    public void setConcurrentIslands(int concurrentIslands) {
+        this.concurrentIslands = concurrentIslands;
     }
 }

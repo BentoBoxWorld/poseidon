@@ -1,9 +1,14 @@
 package world.bentobox.poseidon;
 
+import java.util.Objects;
+
+import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.World.Environment;
 import org.bukkit.WorldCreator;
 import org.bukkit.WorldType;
+import org.bukkit.entity.SpawnCategory;
+import org.bukkit.generator.BiomeProvider;
 import org.bukkit.generator.ChunkGenerator;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
@@ -17,6 +22,7 @@ import world.bentobox.bentobox.lists.Flags;
 import world.bentobox.poseidon.commands.IslandAboutCommand;
 import world.bentobox.poseidon.listeners.AirEffect;
 import world.bentobox.poseidon.world.ChunkGeneratorWorld;
+import world.bentobox.poseidon.world.PoseidonBiomeProvider;
 
 /**
  * Add-on to BentoBox that enables AcidIsland
@@ -27,12 +33,19 @@ public class Poseidon extends GameModeAddon {
 
     private @Nullable Settings settings;
     private @Nullable ChunkGenerator chunkGenerator;
-    private Config<Settings> config = new Config<>(this, Settings.class);
-    private AirEffect airAffect;
-    private AirEffect airEffect;
+    private final Config<Settings> config = new Config<>(this, Settings.class);
+    private BiomeProvider biomeProvider;
 
     private static final String NETHER = "_nether";
     private static final String THE_END = "_the_end";
+
+    /**
+     * This addon uses the new chunk generation API for the sea bottom
+     */
+    @Override
+    public boolean isUsesNewChunkGeneration() {
+        return true;
+    }
 
     @Override
     public void onLoad() {
@@ -40,9 +53,10 @@ public class Poseidon extends GameModeAddon {
         saveDefaultConfig();
         // Load settings from config.yml. This will check if there are any issues with it too.
         loadSettings();
+        // Make the biome provider
+        this.biomeProvider = new PoseidonBiomeProvider(this);
         // Chunk generator
         chunkGenerator = settings.isUseOwnGenerator() ? null : new ChunkGeneratorWorld(this);
-        // Register commands
         // Register commands
         playerCommand = new DefaultPlayerCommand(this)
 
@@ -61,13 +75,11 @@ public class Poseidon extends GameModeAddon {
         settings = config.loadConfigObject();
         if (settings == null) {
             // Woops
-            this.logError("AcidIsland settings could not load! Addon disabled.");
+            this.logError("Poseidon settings could not load! Addon disabled.");
             this.setState(State.DISABLED);
-            if (airEffect != null) {
-                airEffect.cancel();
-            }
             return false;
         }
+
         return true;
     }
 
@@ -83,23 +95,17 @@ public class Poseidon extends GameModeAddon {
 
         // Register listeners
         // Acid Effects
-        airEffect = new AirEffect(this);
-        registerListener(airEffect);
+        registerListener(new AirEffect(this));
     }
 
     @Override
     public void onDisable() {
-        if (airEffect != null) airEffect.cancel();
+        // Do nothing
     }
 
-    @Nullable
+    @NonNull
     public Settings getSettings() {
-        return settings;
-    }
-
-    @Override
-    public void log(String string) {
-        getPlugin().log(string);
+        return Objects.requireNonNull(settings);
     }
 
     /* (non-Javadoc)
@@ -108,23 +114,23 @@ public class Poseidon extends GameModeAddon {
     @Override
     public void createWorlds() {
         String worldName = settings.getWorldName().toLowerCase();
-        if (getServer().getWorld(worldName) == null) {
-            getLogger().info("Creating the world of Poseidon...");
+        if (Bukkit.getWorld(worldName) == null) {
+            log("Creating AcidIsland...");
         }
         // Create the world if it does not exist
         chunkGenerator = new ChunkGeneratorWorld(this);
         islandWorld = getWorld(worldName, World.Environment.NORMAL, chunkGenerator);
         // Make the nether if it does not exist
         if (settings.isNetherGenerate()) {
-            if (getServer().getWorld(worldName + NETHER) == null) {
-                log("Creating Poseidon Nether...");
+            if (Bukkit.getWorld(worldName + NETHER) == null) {
+                log("Creating AcidIsland's Nether...");
             }
             netherWorld = settings.isNetherIslands() ? getWorld(worldName, World.Environment.NETHER, chunkGenerator) : getWorld(worldName, World.Environment.NETHER, null);
         }
         // Make the end if it does not exist
         if (settings.isEndGenerate()) {
-            if (getServer().getWorld(worldName + THE_END) == null) {
-                log("Creating Poseidon End World...");
+            if (Bukkit.getWorld(worldName + THE_END) == null) {
+                log("Creating AcidIsland's End World...");
             }
             endWorld = settings.isEndIslands() ? getWorld(worldName, World.Environment.THE_END, chunkGenerator) : getWorld(worldName, World.Environment.THE_END, null);
         }
@@ -141,16 +147,28 @@ public class Poseidon extends GameModeAddon {
         // Set world name
         worldName2 = env.equals(World.Environment.NETHER) ? worldName2 + NETHER : worldName2;
         worldName2 = env.equals(World.Environment.THE_END) ? worldName2 + THE_END : worldName2;
-        WorldCreator wc = WorldCreator.name(worldName2).type(WorldType.FLAT).environment(env);
+        WorldCreator wc = WorldCreator.name(worldName2).environment(env);
         World w = settings.isUseOwnGenerator() ? wc.createWorld() : wc.generator(chunkGenerator2).createWorld();
         // Set spawn rates
-        if (w != null) {
-            w.setMonsterSpawnLimit(getSettings().getSpawnLimitMonsters());
-            w.setAmbientSpawnLimit(getSettings().getSpawnLimitAmbient());
-            w.setAnimalSpawnLimit(getSettings().getSpawnLimitAnimals());
-            w.setWaterAnimalSpawnLimit(getSettings().getSpawnLimitWaterAnimals());
-            w.setTicksPerAnimalSpawns(getSettings().getTicksPerAnimalSpawns());
-            w.setTicksPerMonsterSpawns(getSettings().getTicksPerMonsterSpawns());
+        if (w != null && getSettings() != null) {
+            if (getSettings().getSpawnLimitMonsters() > 0) {
+                w.setSpawnLimit(SpawnCategory.MONSTER, getSettings().getSpawnLimitMonsters());
+            }
+            if (getSettings().getSpawnLimitAmbient() > 0) {
+                w.setSpawnLimit(SpawnCategory.AMBIENT, getSettings().getSpawnLimitAmbient());
+            }
+            if (getSettings().getSpawnLimitAnimals() > 0) {
+                w.setSpawnLimit(SpawnCategory.ANIMAL, getSettings().getSpawnLimitAnimals());
+            }
+            if (getSettings().getSpawnLimitWaterAnimals() > 0) {
+                w.setSpawnLimit(SpawnCategory.WATER_ANIMAL, getSettings().getSpawnLimitWaterAnimals());
+            }
+            if (getSettings().getTicksPerAnimalSpawns() > 0) {
+                w.setTicksPerSpawns(SpawnCategory.ANIMAL, getSettings().getTicksPerAnimalSpawns());
+            }
+            if (getSettings().getTicksPerMonsterSpawns() > 0) {
+                w.setTicksPerSpawns(SpawnCategory.MONSTER, getSettings().getTicksPerMonsterSpawns());
+            }
         }
         return w;
 
@@ -158,7 +176,7 @@ public class Poseidon extends GameModeAddon {
 
     @Override
     public WorldSettings getWorldSettings() {
-        return settings;
+        return getSettings();
     }
 
     @Override
@@ -185,8 +203,11 @@ public class Poseidon extends GameModeAddon {
      */
     @Override
     public void allLoaded() {
-        // Reload settings and save them. This will occur after all addons have loaded
-        this.loadSettings();
+        // Save settings. This will occur after all addons have loaded
         this.saveWorldSettings();
+    }
+
+    public BiomeProvider getBiomeProvider() {
+        return this.biomeProvider;
     }
 }
