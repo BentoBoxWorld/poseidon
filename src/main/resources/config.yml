@@ -1,12 +1,16 @@
-# Poseidon Configuration ${version}
+# Poseidon Configuration {$version}
 poseidon:
   air-effect:
-    # The time a player can be out of the water without suffering
+    # The time a player can be out of the water without suffering in seconds.
     time: 3
-    # Damage from being in the air
+    # Damage from being in the air.
     damage: 2
+    # The time drinking water will prevent damage from air in seconds. Drinking water is the same as drinking a water breathing potion.
+    water-effect-time: 30
+  # Chance that water mobs will ignore posiedon's children. In percent. Default is 50%
+  water-mob-ignore: 50
   command:
-    # Island Command. What command users will run to access their island
+    # Island Command. What command users will run to access their island.
     island: po
     # The island admin command.
     admin: padmin
@@ -26,6 +30,8 @@ world:
   # It acts like a prefix for nether and end (e.g. poseidon_world, poseidon_world_nether, poseidon_world_end)
   # /!\ BentoBox currently does not support changing this value mid-game. If you do need to change it, do a full reset of your databases and worlds.
   world-name: poseidon_world
+  # Island tree generation random. The bigger the number, the fewer the trees will generate.
+  island-trees: 100
   # World difficulty setting - PEACEFUL, EASY, NORMAL, HARD
   # Other plugins may override this setting
   difficulty: NORMAL

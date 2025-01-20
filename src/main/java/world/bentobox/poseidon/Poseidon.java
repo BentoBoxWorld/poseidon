@@ -23,6 +23,7 @@ import world.bentobox.poseidon.listeners.AirEffect;
 import world.bentobox.poseidon.listeners.IslandChunkPopulator;
 import world.bentobox.poseidon.world.ChunkGeneratorWorld;
 import world.bentobox.poseidon.world.PoseidonBiomeProvider;
+import world.bentobox.poseidon.world.Pregenerator;
 
 /**
  * Add-on to BentoBox that enables under sea exploration
@@ -96,6 +97,9 @@ public class Poseidon extends GameModeAddon {
         // Register listeners
         // Acid Effects
         registerListener(new AirEffect(this));
+        // Pregen
+        Pregenerator pregen = new Pregenerator(this);
+        pregen.start(getOverWorld(), 10);
     }
 
     @Override

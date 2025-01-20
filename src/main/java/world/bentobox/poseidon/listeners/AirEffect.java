@@ -82,6 +82,10 @@ public class AirEffect implements Listener {
 
     @EventHandler(priority = EventPriority.NORMAL)
     public void onPlayerDrinkWater(PlayerItemConsumeEvent e) {
+        if (isInWater(e.getPlayer())) {
+            // No effect in water
+            return;
+        }
         if (addon.inWorld(e.getPlayer().getLocation()) && e.getItem() != null
                 && e.getItem().getType() == Material.POTION) {
             PotionMeta meta = (PotionMeta) e.getItem().getItemMeta();
