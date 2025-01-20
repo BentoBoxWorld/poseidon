@@ -5,7 +5,9 @@ import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.NavigableMap;
 import java.util.Random;
+import java.util.TreeMap;
 
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -32,15 +34,20 @@ public class ChunkGeneratorWorld extends ChunkGenerator {
 
     private final Poseidon addon;
     private final Random rand = new Random();
-    private final Map<Environment, WorldConfig> seaHeight = new EnumMap<>(Environment.class);
+    private final Map<Environment, WorldConfig> seaConfig = new EnumMap<>(Environment.class);
     private final Map<Vector, Material> roofChunk = new HashMap<>();
     private static final Map<Environment, FloorMats> floorMats = Map.of(Environment.NETHER,
             new FloorMats(Material.NETHERRACK, Material.SOUL_SAND), Environment.NORMAL,
             new FloorMats(Material.SANDSTONE, Material.SAND), Environment.THE_END,
             new FloorMats(Material.END_STONE, Material.END_STONE));
+    private static final int NOISE_MAX = 25;
+    private static final Map<Material, Double> BASE_BLOCKS = Map.of(Material.STONE, 1D, Material.DIRT, 100D,
+            Material.DIORITE, 0.05, Material.SANDSTONE, 0.1,
+            Material.GRANITE, 0.05, Material.ANDESITE, 0.04, Material.COBBLESTONE, 0.05, Material.AIR, 0.05);
+    NavigableMap<Double, Material> treeMap = new TreeMap<>();
     private PerlinOctaveGenerator gen;
 
-    private record WorldConfig(int seaHeight, Material waterBlock) {
+    private record WorldConfig(int seaHeight, int seaFloor, Material waterBlock) {
     }
 
     /**
@@ -49,31 +56,52 @@ public class ChunkGeneratorWorld extends ChunkGenerator {
     public ChunkGeneratorWorld(Poseidon addon) {
         super();
         this.addon = addon;
-        seaHeight.put(Environment.NORMAL,
-                new WorldConfig(addon.getSettings().getSeaHeight(), addon.getSettings().getWaterBlock()));
-        seaHeight.put(Environment.NETHER,
-                new WorldConfig(addon.getSettings().getNetherSeaHeight(), addon.getSettings().getNetherWaterBlock()));
-        seaHeight.put(Environment.THE_END,
-                new WorldConfig(addon.getSettings().getEndSeaHeight(), addon.getSettings().getEndWaterBlock()));
+        seaConfig.put(Environment.NORMAL,
+                new WorldConfig(addon.getSettings().getSeaHeight(), addon.getSettings().getSeaFloor(),
+                        addon.getSettings().getWaterBlock()));
+        seaConfig.put(Environment.NETHER,
+                new WorldConfig(addon.getSettings().getNetherSeaHeight(), addon.getSettings().getNetherSeaHeight(),
+                        addon.getSettings().getNetherWaterBlock()));
+        seaConfig.put(Environment.THE_END,
+                new WorldConfig(addon.getSettings().getEndSeaHeight(), addon.getSettings().getEndSeaHeight(),
+                        addon.getSettings().getEndWaterBlock()));
         rand.setSeed(System.currentTimeMillis());
         gen = new PerlinOctaveGenerator((long) (rand.nextLong() * rand.nextGaussian()), 8);
         gen.setScale(1.0 / 30.0);
         makeNetherRoof();
+        buildProbabilityTree(BASE_BLOCKS);
+
+    }
+    
+    @Override
+    public List<BlockPopulator> getDefaultPopulators(World world) {
+        return Collections.emptyList();
+    }
+
+    // Build the TreeMap with cumulative probabilities
+    private NavigableMap<Double, Material> buildProbabilityTree(Map<Material, Double> probabilities) {
+        double cumulativeProbability = 0.0;
+
+        for (Map.Entry<Material, Double> entry : probabilities.entrySet()) {
+            cumulativeProbability += entry.getValue();
+            treeMap.put(cumulativeProbability, entry.getKey());
+        }
+
+        return treeMap;
     }
 
     @Override
     public void generateNoise(@NonNull WorldInfo worldInfo, @NonNull Random random, int chunkX, int chunkZ,
             @NonNull ChunkData chunkData) {
-        WorldConfig wc = seaHeight.get(worldInfo.getEnvironment());
+        WorldConfig wc = seaConfig.get(worldInfo.getEnvironment());
         int sh = wc.seaHeight();
         if (sh > worldInfo.getMinHeight()) {
-            chunkData.setRegion(0, worldInfo.getMinHeight() + 1, 0, 16, sh + 1, 16, wc.waterBlock());
-            // Add some noise
-            if (addon.getSettings().isOceanFloor()) {
-                chunkData.setRegion(0, worldInfo.getMinHeight(), 0, 16, worldInfo.getMinHeight() + 1, 16,
-                        Material.BEDROCK);
-                addNoise(worldInfo, chunkX, chunkZ, chunkData);
-            }
+            // Air
+            chunkData.setRegion(0, wc.seaHeight() + 1, 0, 16, worldInfo.getMaxHeight(), 16, Material.AIR);
+            // Sea level down to sea floor
+            chunkData.setRegion(0, wc.seaFloor() + 1, 0, 16, wc.seaHeight() + 1, 16, wc.waterBlock());
+            // Add some noise to sea floor
+            addNoise(worldInfo, chunkX, chunkZ, chunkData);
         }
         if (worldInfo.getEnvironment().equals(Environment.NETHER) && addon.getSettings().isNetherRoof()) {
             roofChunk.forEach((k, v) -> chunkData.setBlock(k.getBlockX(), worldInfo.getMaxHeight() + k.getBlockY(),
@@ -82,27 +110,55 @@ public class ChunkGeneratorWorld extends ChunkGenerator {
     }
 
     private void addNoise(@NonNull WorldInfo worldInfo, int chunkX, int chunkZ, @NonNull ChunkData chunkData) {
+        int seaFloor = seaConfig.get(worldInfo.getEnvironment()).seaFloor();
         for (int x = 0; x < 16; x++) {
             for (int z = 0; z < 16; z++) {
-                int n = (int) (25 * gen.noise((chunkX << 4) + (double) x, (chunkZ << 4) + (double) z, 0.5, 0.5, true));
-                for (int y = worldInfo.getMinHeight(); y < 25 + n; y++) {
+                int n = (int) (NOISE_MAX
+                        * gen.noise((chunkX << 4) + (double) x, (chunkZ << 4) + (double) z, 0.5, 0.5, true));
+                for (int y = seaFloor; y < seaFloor + NOISE_MAX + n; y++) {
                     chunkData.setBlock(x, y, z, rand.nextBoolean() ? floorMats.get(worldInfo.getEnvironment()).top()
                             : floorMats.get(worldInfo.getEnvironment()).base());
                 }
             }
         }
-        // Make an solid base so sand doesn't fall into the void
-        chunkData.setRegion(0, worldInfo.getMinHeight(), 0, 16, worldInfo.getMinHeight() + 1, 16, Material.BEDROCK);
     }
 
     @Override
     public boolean shouldGenerateNoise() {
-        return false;
+        return true;
     }
 
     @Override
     public boolean shouldGenerateSurface() {
-        return addon.getSettings().isOceanFloor();
+        return true;
+    }
+
+    @Override
+    public void generateCaves(WorldInfo worldInfo, Random random, int chunkX, int chunkZ, ChunkData chunkData) {
+        if (worldInfo.getEnvironment() == Environment.NORMAL) {
+            for (int x = 0; x < 16; x++) {
+                for (int z = 0; z < 16; z++) {
+                    for (int y = addon.getSettings().getSeaFloor() + NOISE_MAX; y < Math
+                            .min(addon.getSettings().getSeaHeight() + 1, worldInfo.getMaxHeight() - 1); y++) {
+                        if (chunkData.getType(x, y, z) == Material.AIR) {
+                            double randomValue = rand.nextDouble() * treeMap.lastKey();
+                            Material mat = treeMap.ceilingEntry(randomValue).getValue();
+                            // Adjust blocks above sea level
+                            if (y == addon.getSettings().getSeaHeight()) {
+                                // Top block - do some conversions
+                                mat = switch (mat) {
+                                case DIRT -> Material.GRASS_BLOCK;
+                                case COBBLESTONE -> Material.DIRT;
+                                case STONE -> Material.GRASS_BLOCK;
+                                default -> mat;
+                                };
+                            }
+                            chunkData.setBlock(x, y, z, mat);
+                        }
+                    }
+                }
+            }
+        }
     }
 
     @Override
@@ -135,11 +191,6 @@ public class ChunkGeneratorWorld extends ChunkGenerator {
     @Override
     public boolean canSpawn(World world, int x, int z) {
         return true;
-    }
-
-    @Override
-    public List<BlockPopulator> getDefaultPopulators(final World world) {
-        return Collections.emptyList();
     }
 
     /*

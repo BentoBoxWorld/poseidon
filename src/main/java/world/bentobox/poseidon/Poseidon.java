@@ -6,7 +6,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.World.Environment;
 import org.bukkit.WorldCreator;
-import org.bukkit.WorldType;
 import org.bukkit.entity.SpawnCategory;
 import org.bukkit.generator.BiomeProvider;
 import org.bukkit.generator.ChunkGenerator;
@@ -21,11 +20,12 @@ import world.bentobox.bentobox.api.configuration.WorldSettings;
 import world.bentobox.bentobox.lists.Flags;
 import world.bentobox.poseidon.commands.IslandAboutCommand;
 import world.bentobox.poseidon.listeners.AirEffect;
+import world.bentobox.poseidon.listeners.IslandChunkPopulator;
 import world.bentobox.poseidon.world.ChunkGeneratorWorld;
 import world.bentobox.poseidon.world.PoseidonBiomeProvider;
 
 /**
- * Add-on to BentoBox that enables AcidIsland
+ * Add-on to BentoBox that enables under sea exploration
  * @author tastybento
  *
  */
@@ -115,7 +115,8 @@ public class Poseidon extends GameModeAddon {
     public void createWorlds() {
         String worldName = settings.getWorldName().toLowerCase();
         if (Bukkit.getWorld(worldName) == null) {
-            log("Creating AcidIsland...");
+            log("Creating the sea kingdom...");
+            logWarning("The error 'No key layers in MapLike[{}]' is normal and not an error. You can ignore it.");
         }
         // Create the world if it does not exist
         chunkGenerator = new ChunkGeneratorWorld(this);
@@ -123,17 +124,21 @@ public class Poseidon extends GameModeAddon {
         // Make the nether if it does not exist
         if (settings.isNetherGenerate()) {
             if (Bukkit.getWorld(worldName + NETHER) == null) {
-                log("Creating AcidIsland's Nether...");
+                log("Creating the sea kingdom's Nether...");
+                logWarning("The error 'No key layers in MapLike[{}]' is normal and not an error. You can ignore it.");
             }
             netherWorld = settings.isNetherIslands() ? getWorld(worldName, World.Environment.NETHER, chunkGenerator) : getWorld(worldName, World.Environment.NETHER, null);
         }
         // Make the end if it does not exist
         if (settings.isEndGenerate()) {
             if (Bukkit.getWorld(worldName + THE_END) == null) {
-                log("Creating AcidIsland's End World...");
+                log("Creating the sea kingdom's End World...");
+                logWarning("The error 'No key layers in MapLike[{}]' is normal and not an error. You can ignore it.");
             }
             endWorld = settings.isEndIslands() ? getWorld(worldName, World.Environment.THE_END, chunkGenerator) : getWorld(worldName, World.Environment.THE_END, null);
         }
+        // Grow trees
+        this.registerListener(new IslandChunkPopulator(this));
     }
 
     /**

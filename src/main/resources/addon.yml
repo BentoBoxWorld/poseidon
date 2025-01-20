@@ -1,7 +1,7 @@
 name: Poseidon
 main: world.bentobox.poseidon.Poseidon
 version: ${version}${build.number}
-api-version: 1.13.0
+api-version: 3.2.3
 metrics: true
 repository: "BentoBoxWorld/Poseidon"
 icon: "TRIDENT"

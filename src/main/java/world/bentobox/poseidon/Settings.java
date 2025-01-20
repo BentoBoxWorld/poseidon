@@ -35,8 +35,25 @@ public class Settings implements WorldSettings {
 
     // ---------------------------------------------
 
+    // Air
+    @ConfigComment("The time a player can be out of the water without suffering in seconds.")
+    @ConfigEntry(path = "poseidon.air-effect.time")
+    private int airEffectTime = 3;
+
+    @ConfigComment("Damage from being in the air.")
+    @ConfigEntry(path = "poseidon.air-effect.damage")
+    private int airEffectDamage = 2;
+
+    @ConfigComment("The time drinking water will prevent damage from air in seconds. Drinking water is the same as drinking a water breathing potion.")
+    @ConfigEntry(path = "poseidon.air-effect.water-effect-time")
+    private int waterEffectTime = 30;
+
+    @ConfigComment("Chance that water mobs will ignore posiedon's children. In percent. Default is 50%")
+    @ConfigEntry(path = "poseidon.water-mob-ignore")
+    private int ingoreChance = 50;
+
     // Command
-    @ConfigComment("Island Command. What command users will run to access their island")
+    @ConfigComment("Island Command. What command users will run to access their island.")
     @ConfigEntry(path = "poseidon.command.island")
     private String playerCommandAliases = "po";
 
@@ -66,6 +83,10 @@ public class Settings implements WorldSettings {
     @ConfigEntry(path = "world.world-name", needsReset = true)
     private String worldName = "poseidon_world";
 
+    @ConfigComment("Island tree generation random. The bigger the number, the fewer the trees will generate.")
+    @ConfigEntry(path = "world.island-trees")
+    private int islandTrees = 50;
+
     @ConfigComment("World difficulty setting - PEACEFUL, EASY, NORMAL, HARD")
     @ConfigComment("Other plugins may override this setting")
     @ConfigEntry(path = "world.difficulty")
@@ -94,13 +115,13 @@ public class Settings implements WorldSettings {
     @ConfigComment("It is the same for every dimension : Overworld, Nether and End.")
     @ConfigComment("This value cannot be changed mid-game and the plugin will not start if it is different.")
     @ConfigEntry(path = "world.distance-between-islands", needsReset = true)
-    private int islandDistance = 64;
+    private int islandDistance = 400;
 
     @ConfigComment("Default protection range radius in blocks. Cannot be larger than distance.")
     @ConfigComment("Admins can change protection sizes for players individually using /acid range set <player> <new range>")
     @ConfigComment("or set this permission: poseidon.island.range.<number>")
     @ConfigEntry(path = "world.protection-range", overrideOnChange = true)
-    private int islandProtectionRange = 50;
+    private int islandProtectionRange = 100;
 
     @ConfigComment("Start islands at these coordinates. This is where new islands will start in the")
     @ConfigComment("world. These must be a factor of your island distance, but the plugin will auto")
@@ -119,7 +140,7 @@ public class Settings implements WorldSettings {
     private int islandZOffset;
 
     @ConfigComment("Island height - Lowest is 5.")
-    @ConfigComment("It is the y coordinate of the bedrock block in the schem.")
+    @ConfigComment("It is the y coordinate of the bedrock block in the blueprint.")
     @ConfigEntry(path = "world.island-height")
     private int islandHeight = 30;
     
@@ -138,10 +159,13 @@ public class Settings implements WorldSettings {
     private boolean useOwnGenerator;
 
     @ConfigComment("Sea height (don't changes this mid-game unless you delete the world)")
-    @ConfigComment("Minimum is 0, which means you are playing Skyblock!")
     @ConfigEntry(path = "world.sea-height")
     private int seaHeight = 70;
     
+    @ConfigComment("Sea floor (don't changes this mid-game unless you delete the world)")
+    @ConfigEntry(path = "world.sea-floor")
+    private int seaFloor = 25;
+
     @ConfigComment("Water block. This should usually stay as WATER, but may be LAVA for fun")
     @ConfigEntry(path = "world.water-block", needsReset = true)
     private Material waterBlock = Material.WATER;
@@ -199,11 +223,11 @@ public class Settings implements WorldSettings {
     @ConfigComment("Note that with a standard nether all players arrive at the same portal and entering a")
     @ConfigComment("portal will return them back to their islands.")
     @ConfigEntry(path = "world.nether.generate")
-    private boolean netherGenerate = false;
+    private boolean netherGenerate = true;
 
     @ConfigComment("Islands in Nether. Change to false for standard vanilla nether.")
     @ConfigEntry(path = "world.nether.islands", needsReset = true)
-    private boolean netherIslands = false;
+    private boolean netherIslands = true;
 
     @ConfigComment("Sea height in Nether. Only operates if nether islands is true.")
     @ConfigComment("Changing mid-game will cause problems!")
@@ -218,7 +242,7 @@ public class Settings implements WorldSettings {
     @ConfigComment("Change to false if lag is a problem from the generation")
     @ConfigComment("Only applies to islands Nether")
     @ConfigEntry(path = "world.nether.roof")
-    private boolean netherRoof = false;
+    private boolean netherRoof = true;
 
     @ConfigComment("Nether spawn protection radius - this is the distance around the nether spawn")
     @ConfigComment("that will be protected from player interaction (breaking blocks, pouring lava etc.)")
@@ -992,8 +1016,8 @@ public class Settings implements WorldSettings {
     }
     @Override
     public boolean isWaterUnsafe() {
-        // Water is unsafe in acid island
-        return true;
+        // Water is safe
+        return false;
     }
     /**
      * @param adminCommand what you want your admin command to be
@@ -1853,5 +1877,89 @@ public class Settings implements WorldSettings {
      */
     public void setConcurrentIslands(int concurrentIslands) {
         this.concurrentIslands = concurrentIslands;
+    }
+
+    /**
+     * @return the seaFloor
+     */
+    public int getSeaFloor() {
+        return seaFloor;
+    }
+
+    /**
+     * @param seaFloor the seaFloor to set
+     */
+    public void setSeaFloor(int seaFloor) {
+        this.seaFloor = seaFloor;
+    }
+
+    /**
+     * @return the airEffectTime
+     */
+    public int getAirEffectTime() {
+        return airEffectTime;
+    }
+
+    /**
+     * @param airEffectTime the airEffectTime to set
+     */
+    public void setAirEffectTime(int airEffectTime) {
+        this.airEffectTime = airEffectTime;
+    }
+
+    /**
+     * @return the airEffectDamage
+     */
+    public int getAirEffectDamage() {
+        return airEffectDamage;
+    }
+
+    /**
+     * @param airEffectDamage the airEffectDamage to set
+     */
+    public void setAirEffectDamage(int airEffectDamage) {
+        this.airEffectDamage = airEffectDamage;
+    }
+
+    /**
+     * @return the waterEffectTime
+     */
+    public int getWaterEffectTime() {
+        return waterEffectTime;
+    }
+
+    /**
+     * @param waterEffectTime the waterEffectTime to set
+     */
+    public void setWaterEffectTime(int waterEffectTime) {
+        this.waterEffectTime = waterEffectTime;
+    }
+
+    /**
+     * @return the ingoreChance
+     */
+    public int getIngoreChance() {
+        return ingoreChance;
+    }
+
+    /**
+     * @param ingoreChance the ingoreChance to set
+     */
+    public void setIngoreChance(int ingoreChance) {
+        this.ingoreChance = ingoreChance;
+    }
+
+    /**
+     * @return the islandTrees
+     */
+    public int getIslandTrees() {
+        return islandTrees;
+    }
+
+    /**
+     * @param islandTrees the islandTrees to set
+     */
+    public void setIslandTrees(int islandTrees) {
+        this.islandTrees = islandTrees;
     }
 }

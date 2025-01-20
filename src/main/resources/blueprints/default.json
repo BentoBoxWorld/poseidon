@@ -1,18 +1,14 @@
 {
   "uniqueId": "default",
-  "icon": "PRISMARINE",
-  "displayName": "§eThe Original AcidIsland",
+  "icon": "TRIDENT",
+  "displayName": "Poseidon's Realm",
   "description": [
-    "§bAn island with a sheep - baa!",
-    "§aIncludes an Overworld island",
-    "§cIncludes a Nether island",
-    "§6Includes an End island"
+    "An undersea paradise?"
   ],
   "requirePermission": false,
   "blueprints": {
-    "NORMAL": "island",
-    "NETHER": "nether-island",
-    "THE_END": "end-island"
+    "NORMAL": "island"
   },
-  "slot": 2
+  "slot": 1,
+  "times": 0
 }
