@@ -81,10 +81,9 @@ public class AirEffect implements Listener {
     }
 
     @EventHandler(priority = EventPriority.NORMAL)
-    public void onPlayerDrinkPotion(PlayerItemConsumeEvent e) {
+    public void onPlayerDrinkWater(PlayerItemConsumeEvent e) {
         if (addon.inWorld(e.getPlayer().getLocation()) && e.getItem() != null
                 && e.getItem().getType() == Material.POTION) {
-            // Water check
             PotionMeta meta = (PotionMeta) e.getItem().getItemMeta();
             if (meta.getBasePotionType() == PotionType.WATER) {
                 e.getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.WATER_BREATHING,
@@ -111,8 +110,7 @@ public class AirEffect implements Listener {
             player.setRemainingAir(player.getMaximumAir());
             // Players can also see underwater
             if (!player.hasPotionEffect(PotionEffectType.NIGHT_VISION)) {
-                player.addPotionEffect(new PotionEffect(PotionEffectType.NIGHT_VISION,
-                        addon.getSettings().getAirEffectTime() * 60, 2)); // This will wear off if they go into the air
+                player.addPotionEffect(new PotionEffect(PotionEffectType.NIGHT_VISION, 3 * 20 * 60, 1)); // This will wear off if they go into the air
             }
             return;
         }
