@@ -6,8 +6,10 @@ import java.util.Set;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
+import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.Vector;
 
+import world.bentobox.bentobox.BentoBox;
 import world.bentobox.bentobox.util.Util;
 import world.bentobox.poseidon.Poseidon;
 
@@ -19,6 +21,8 @@ public class Pregenerator {
     private boolean isRunning;
     private boolean generateContinuously;
     private long delayTicks;
+    private BukkitTask task;
+    private Set<Vector> remainingChunks;
 
     public Pregenerator(Poseidon addon) {
         this.addon = addon;
@@ -38,8 +42,6 @@ public class Pregenerator {
             addon.log("Pregeneration is already running.");
             return;
         }
-
-        isRunning = true;
         addon.log("Starting pregeneration...");
 
         long currentIslandCount = addon.getIslands().getIslandCount(world);
@@ -63,20 +65,27 @@ public class Pregenerator {
             for (int dx = -viewDistance; dx <= viewDistance; dx++) {
                 for (int dz = -viewDistance; dz <= viewDistance; dz++) {
                     chunksToGenerate.add(new Vector(startChunkX + dx, 0, startChunkZ + dz));
-                }
             }
-            lastIslandLocation = nextGridLocation(lastIslandLocation);
         }
-
-        // Convert to a final set of chunks to process sequentially
-        preGen(world, new HashSet<>(chunksToGenerate));
+        lastIslandLocation = nextGridLocation(lastIslandLocation);
     }
 
-    void preGen(World world, Set<Vector> remainingChunks) {
-        if (remainingChunks.isEmpty() || !isRunning) {
-            addon.log("Pregeneration complete.");
-            return;
-        }
+        // Convert to a final set of chunks to process sequentially
+        remainingChunks = new HashSet<>(chunksToGenerate);
+        task = Bukkit.getScheduler().runTaskTimerAsynchronously(addon.getPlugin(), () -> {
+            if (this.remainingChunks.isEmpty()) {
+                task.cancel();
+                Bukkit.getScheduler().runTask(addon.getPlugin(), () -> addon.log("Pregeneration is complete."));
+                return;
+            }
+            if (!isRunning) {
+                preGen(world);
+            }
+        }, 0L, 1L);
+    }
+
+    void preGen(World world) {
+        isRunning = true;
         Vector chunkCoords = remainingChunks.iterator().next();
         remainingChunks.remove(chunkCoords);
 
@@ -85,19 +94,22 @@ public class Pregenerator {
 
         if (Util.isChunkGenerated(world, chunkX, chunkZ)) {
             // Skip pregenerated
-            preGen(world, remainingChunks);
+            isRunning = false;
             return;
         }
         addon.log("Pregenerating chunk at (" + chunkX + ", " + chunkZ + ")...");
         Util.getChunkAtAsync(world, chunkX, chunkZ).thenAccept(chunk -> {
-            addon.log("Chunk at (" + chunkX + ", " + chunkZ + ") generated successfully.");
+            Bukkit.getScheduler().runTask(addon.getPlugin(),
+                    () -> addon.log("Chunk at (" + chunkX + ", " + chunkZ + ") generated successfully."));
             if (generateContinuously) {
-                preGen(world, remainingChunks);
+                isRunning = false;
+                return;
             } else {
-                Bukkit.getScheduler().runTaskLater(addon.getPlugin(), () -> preGen(world, remainingChunks), delayTicks);
+                Bukkit.getScheduler().runTaskLater(addon.getPlugin(), () -> isRunning = false, delayTicks);
             }
         }).exceptionally(throwable -> {
-            addon.log("Failed to generate chunk at (" + chunkX + ", " + chunkZ + "): " + throwable.getMessage());
+            Bukkit.getScheduler().runTask(addon.getPlugin(), () -> addon
+                    .log("Failed to generate chunk at (" + chunkX + ", " + chunkZ + "): " + throwable.getMessage()));
             return null;
         });
     }
@@ -141,12 +153,7 @@ public class Pregenerator {
      * Stops the pregeneration process.
      */
     public void stop() {
-        if (!isRunning) {
-            addon.log("Pregeneration is not running.");
-            return;
-        }
-
-        isRunning = false;
+        this.remainingChunks.clear();
         addon.log("Pregeneration stopped.");
     }
 

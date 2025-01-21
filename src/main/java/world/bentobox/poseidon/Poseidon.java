@@ -97,9 +97,6 @@ public class Poseidon extends GameModeAddon {
         // Register listeners
         // Acid Effects
         registerListener(new AirEffect(this));
-        // Pregen
-        Pregenerator pregen = new Pregenerator(this);
-        pregen.start(getOverWorld(), 10);
     }
 
     @Override
@@ -143,6 +140,9 @@ public class Poseidon extends GameModeAddon {
         }
         // Grow trees
         this.registerListener(new IslandChunkPopulator(this));
+        // Pregen
+        Pregenerator pregen = new Pregenerator(this);
+        pregen.start(getOverWorld(), 10);
     }
 
     /**

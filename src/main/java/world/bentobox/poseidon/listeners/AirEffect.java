@@ -8,7 +8,9 @@ import java.util.WeakHashMap;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.block.BlockFace;
 import org.bukkit.block.data.BlockData;
+import org.bukkit.block.data.Levelled;
 import org.bukkit.block.data.Waterlogged;
 import org.bukkit.damage.DamageSource;
 import org.bukkit.damage.DamageType;
@@ -27,6 +29,7 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.potion.PotionType;
 import org.bukkit.scheduler.BukkitTask;
 
+import world.bentobox.bentobox.BentoBox;
 import world.bentobox.poseidon.Poseidon;
 
 /**
@@ -43,7 +46,7 @@ public class AirEffect implements Listener {
     public AirEffect(Poseidon addon) {
         this.addon = addon;
         task = Bukkit.getScheduler().runTaskTimer(addon.getPlugin(), () -> {
-            dryPlayers.keySet().removeIf(this::isInWater);
+            dryPlayers.keySet().removeIf(p -> isInWater(p) != WaterBlock.NONE);
             // Players get a grace period before they start hurting
             dryPlayers.entrySet().stream().filter(
                     en -> System.currentTimeMillis() > en.getValue() + (addon.getSettings().getAirEffectTime() * 1000))
@@ -57,32 +60,60 @@ public class AirEffect implements Listener {
         player.damage(addon.getSettings().getAirEffectDamage(), DamageSource.builder(DamageType.WIND_CHARGE).build());
     }
 
+    private enum WaterBlock {
+        TOP, BOTTOM, BOTH, NONE
+    }
+
     /**
-     * Check if a player is in the water (or in general not to be affected by air)
+     * Check if a player is in the water (or in general not to be affected by air).
+     * Be sure to check that the player is in the world
      * @param p player
      * @return true if player is safe
      */
-    private boolean isInWater(Player p) {
+    private WaterBlock isInWater(Player p) {
+        if (!addon.inWorld(p.getLocation())) {
+            throw new IllegalStateException(
+                    "Player is not in the Poseidon world but the isInWater method was called. Make sure to check if the player is in the world before calling this method.");
+        }
         // In this case, "water breathing" literally means breathing water!
         if (p.hasPotionEffect(PotionEffectType.WATER_BREATHING)) {
-            return true;
+            return WaterBlock.TOP;
         }
-        Location l = p.getLocation();
-        if (!addon.inWorld(l) || l.getBlock().getType() == Material.WATER
-                || l.getBlock().getType() == Material.BUBBLE_COLUMN || l.getBlock().getType() == Material.TALL_SEAGRASS
-                || l.getBlock().getType() == Material.SEAGRASS) {
-            return true;
+        Location loc = p.getLocation();
+        // Top half of player
+        Material top = loc.getBlock().getRelative(BlockFace.UP).getType();
+        // Bottom half
+        Material bot = loc.getBlock().getType();
+        boolean topWater = top == Material.WATER || top == Material.BUBBLE_COLUMN || top == Material.TALL_SEAGRASS
+                || top == Material.SEAGRASS;
+        boolean botWater = bot == Material.WATER || bot == Material.BUBBLE_COLUMN || bot == Material.TALL_SEAGRASS
+                || bot == Material.SEAGRASS;
+        if (topWater && botWater) {
+            return WaterBlock.BOTH;
         }
-        BlockData bd = l.getBlock().getBlockData();
+        if (topWater && !botWater) {
+            return WaterBlock.TOP;
+        }
+        if (botWater && !topWater) {
+            return WaterBlock.BOTTOM;
+        }
+        // Check cauldron
+        if (loc.getBlock().getType() == Material.CAULDRON && loc.getBlock().getBlockData() instanceof Levelled cauldron
+                && cauldron.getLevel() > 0) {
+            // Any level of water is fine
+            return WaterBlock.BOTTOM;
+        }
+        // Check waterlogged blocks
+        BlockData bd = loc.getBlock().getBlockData();
         if (bd instanceof Waterlogged wl) {
-            return wl.isWaterlogged();
+            return wl.isWaterlogged() ? WaterBlock.BOTTOM : WaterBlock.NONE;
         }
-        return false;
+        return WaterBlock.NONE;
     }
 
     @EventHandler(priority = EventPriority.NORMAL)
     public void onPlayerDrinkWater(PlayerItemConsumeEvent e) {
-        if (isInWater(e.getPlayer())) {
+        if (!addon.inWorld(e.getPlayer().getWorld()) || isInWater(e.getPlayer()) != WaterBlock.NONE) {
             // No effect in water
             return;
         }
@@ -109,17 +140,20 @@ public class AirEffect implements Listener {
             return;
         }
         Player player = e.getPlayer();
-        if (isInWater(player)) {
+        WaterBlock result = isInWater(player);
+        if (result == WaterBlock.TOP || result == WaterBlock.BOTH) {
             // Players can always breath underwater
             player.setRemainingAir(player.getMaximumAir());
             // Players can also see underwater
-            if (!player.hasPotionEffect(PotionEffectType.NIGHT_VISION)) {
-                player.addPotionEffect(new PotionEffect(PotionEffectType.NIGHT_VISION, 3 * 20 * 60, 1)); // This will wear off if they go into the air
-            }
+            player.addPotionEffect(new PotionEffect(PotionEffectType.NIGHT_VISION, 5 * 20 * 60, 1)); // 5 minutes
             return;
+        } else {
+            player.removePotionEffect(PotionEffectType.NIGHT_VISION);
         }
         // Player is not in water - only log the initial time they were dry
-        dryPlayers.putIfAbsent(player, System.currentTimeMillis());
+        if (result == WaterBlock.NONE) {
+            dryPlayers.putIfAbsent(player, System.currentTimeMillis());
+        }
     }
 
     public void cancel() {

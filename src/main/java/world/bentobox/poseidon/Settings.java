@@ -229,20 +229,13 @@ public class Settings implements WorldSettings {
     @ConfigEntry(path = "world.nether.islands", needsReset = true)
     private boolean netherIslands = true;
 
-    @ConfigComment("Sea height in Nether. Only operates if nether islands is true.")
-    @ConfigComment("Changing mid-game will cause problems!")
-    @ConfigEntry(path = "world.nether.sea-height", needsReset = true)
-    private int netherSeaHeight = 54;
+    @ConfigComment("Number of mobs per chunk in Poseidon nether.")
+    @ConfigEntry(path = "world.nether.mobs-per-chunk")
+    private int mobsPerChunk = 5;
     
-    @ConfigComment("Water block. This should usually stay as WATER, but may be LAVA for fun")
+    @ConfigComment("Poseidon air will be water.")
     @ConfigEntry(path = "world.nether.water-block", needsReset = true)
     private Material netherWaterBlock = Material.WATER;
-
-    @ConfigComment("Make the nether roof, if false, there is nothing up there")
-    @ConfigComment("Change to false if lag is a problem from the generation")
-    @ConfigComment("Only applies to islands Nether")
-    @ConfigEntry(path = "world.nether.roof")
-    private boolean netherRoof = true;
 
     @ConfigComment("Nether spawn protection radius - this is the distance around the nether spawn")
     @ConfigComment("that will be protected from player interaction (breaking blocks, pouring lava etc.)")
@@ -756,12 +749,6 @@ public class Settings implements WorldSettings {
         return maxTeamSize;
     }
     /**
-     * @return the netherSeaHeight
-     */
-    public int getNetherSeaHeight() {
-        return netherSeaHeight;
-    }
-    /**
      * @return the netherSpawnRadius
      */
     @Override
@@ -940,12 +927,6 @@ public class Settings implements WorldSettings {
     @Override
     public boolean isNetherIslands() {
         return netherIslands;
-    }
-    /**
-     * @return the netherRoof
-     */
-    public boolean isNetherRoof() {
-        return netherRoof;
     }
     /**
      * @return the onJoinResetEnderChest
@@ -1223,12 +1204,6 @@ public class Settings implements WorldSettings {
         this.netherIslands = netherIslands;
     }
     /**
-     * @param netherRoof the netherRoof to set
-     */
-    public void setNetherRoof(boolean netherRoof) {
-        this.netherRoof = netherRoof;
-    }
-    /**
      * @param netherSpawnRadius the netherSpawnRadius to set
      */
     public void setNetherSpawnRadius(int netherSpawnRadius) {
@@ -1307,12 +1282,6 @@ public class Settings implements WorldSettings {
      */
     public void setSeaHeight(int seaHeight) {
         this.seaHeight = seaHeight;
-    }
-    /**
-     * @param netherSeaHeight the netherSeaHeight to set
-     */
-    public void setNetherSeaHeight(int netherSeaHeight) {
-        this.netherSeaHeight = netherSeaHeight;
     }
     /**
      * @param endSeaHeight the endSeaHeight to set
@@ -1961,5 +1930,19 @@ public class Settings implements WorldSettings {
      */
     public void setIslandTrees(int islandTrees) {
         this.islandTrees = islandTrees;
+    }
+
+    /**
+     * @return the mobsPerChunk
+     */
+    public int getMobsPerChunk() {
+        return mobsPerChunk;
+    }
+
+    /**
+     * @param mobsPerChunk the mobsPerChunk to set
+     */
+    public void setMobsPerChunk(int mobsPerChunk) {
+        this.mobsPerChunk = mobsPerChunk;
     }
 }
