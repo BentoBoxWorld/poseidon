@@ -1,0 +1,17 @@
+{
+  "uniqueId": "shipwrecked!",
+  "icon": "RECOVERY_COMPASS",
+  "displayName": "Shipwrecked!",
+  "description": [
+    "Shipwrecked!",
+    "But somehow",
+    "you are alive!",
+    "The water took you!"
+  ],
+  "requirePermission": false,
+  "blueprints": {
+    "NORMAL": "drowned-wreck"
+  },
+  "slot": 3,
+  "times": 0
+}
