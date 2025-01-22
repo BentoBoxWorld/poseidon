@@ -1,5 +1,6 @@
 package world.bentobox.poseidon.listeners;
 
+import java.util.EnumSet;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Random;
@@ -85,9 +86,9 @@ public class AirEffect implements Listener {
         // Bottom half
         Material bot = loc.getBlock().getType();
         boolean topWater = top == Material.WATER || top == Material.BUBBLE_COLUMN || top == Material.TALL_SEAGRASS
-                || top == Material.SEAGRASS;
+                || top == Material.SEAGRASS || top.name().contains("_FAN");
         boolean botWater = bot == Material.WATER || bot == Material.BUBBLE_COLUMN || bot == Material.TALL_SEAGRASS
-                || bot == Material.SEAGRASS;
+                || bot == Material.SEAGRASS || top.name().contains("_FAN");
         if (topWater && botWater) {
             return WaterBlock.BOTH;
         }
