@@ -1,6 +1,5 @@
 package world.bentobox.poseidon.listeners;
 
-import java.util.EnumSet;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Random;
@@ -20,8 +19,10 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityTargetLivingEntityEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerItemConsumeEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.inventory.meta.PotionMeta;
@@ -30,7 +31,7 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.potion.PotionType;
 import org.bukkit.scheduler.BukkitTask;
 
-import world.bentobox.bentobox.BentoBox;
+import world.bentobox.bentobox.api.user.User;
 import world.bentobox.poseidon.Poseidon;
 
 /**
@@ -50,12 +51,12 @@ public class AirEffect implements Listener {
             dryPlayers.keySet().removeIf(p -> isInWater(p) != WaterBlock.NONE);
             // Players get a grace period before they start hurting
             dryPlayers.entrySet().stream().filter(
-                    en -> System.currentTimeMillis() > en.getValue() + (addon.getSettings().getAirEffectTime() * 1000))
-                    .map(Entry::getKey).forEach(this::processAir);
+                    en -> System.currentTimeMillis() > en.getValue() + (addon.getSettings().getAirGracePeriod() * 1000))
+                    .map(Entry::getKey).forEach(this::damagePlayer);
         }, 20L, 20L);
     }
 
-    private void processAir(Player player) {
+    private void damagePlayer(Player player) {
         // Reduce player's air
         player.setRemainingAir(0);
         player.damage(addon.getSettings().getAirEffectDamage(), DamageSource.builder(DamageType.WIND_CHARGE).build());
@@ -136,6 +137,19 @@ public class AirEffect implements Listener {
     }
 
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
+    public void onWorldChange(PlayerChangedWorldEvent e) {
+        // From has to be Poseidon
+        if (!addon.inWorld(e.getFrom())) {
+            return;
+        }
+        // Leaving Poseidon
+        if (!addon.inWorld(e.getPlayer().getWorld())) {
+            dryPlayers.remove(e.getPlayer());
+            e.getPlayer().removePotionEffect(PotionEffectType.NIGHT_VISION);
+        }
+    }
+
+    @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
     public void onPlayerMove(PlayerMoveEvent e) {
         if (!addon.inWorld(e.getFrom())) {
             return;
@@ -171,6 +185,15 @@ public class AirEffect implements Listener {
                 || e.getEntityType() == EntityType.ELDER_GUARDIAN) && e.getTarget() instanceof Player
                 && r.nextDouble() < (addon.getSettings().getIngoreChance() / 100D)) {
             e.setCancelled(true);
+        }
+    }
+
+    @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
+    public void onDrowning(EntityDamageEvent e) {
+        if (e.getDamageSource().getDamageType() == DamageType.DROWN && e.getEntity() instanceof Player p
+                && addon.inWorld(p.getWorld())) {
+            User user = User.getInstance(p);
+            user.sendMessage("poseidon.warning");
         }
     }
 

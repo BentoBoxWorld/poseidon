@@ -37,10 +37,10 @@ public class Settings implements WorldSettings {
 
     // Air
     @ConfigComment("The time a player can be out of the water without suffering in seconds.")
-    @ConfigEntry(path = "poseidon.air-effect.time")
-    private int airEffectTime = 3;
+    @ConfigEntry(path = "poseidon.air-effect.grace-period")
+    private int airGracePeriod = 3;
 
-    @ConfigComment("Damage from being in the air.")
+    @ConfigComment("Damage per second from being in the air.")
     @ConfigEntry(path = "poseidon.air-effect.damage")
     private int airEffectDamage = 2;
 
@@ -1865,15 +1865,15 @@ public class Settings implements WorldSettings {
     /**
      * @return the airEffectTime
      */
-    public int getAirEffectTime() {
-        return airEffectTime;
+    public int getAirGracePeriod() {
+        return airGracePeriod;
     }
 
     /**
-     * @param airEffectTime the airEffectTime to set
+     * @param airGracePeriod the airEffectTime to set
      */
-    public void setAirEffectTime(int airEffectTime) {
-        this.airEffectTime = airEffectTime;
+    public void setAirGracePeriod(int airGracePeriod) {
+        this.airGracePeriod = airGracePeriod;
     }
 
     /**
