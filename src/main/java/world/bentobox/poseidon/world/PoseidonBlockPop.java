@@ -126,7 +126,7 @@ public class PoseidonBlockPop extends BlockPopulator {
 
     // Select a random tree type based on probabilities
     public TreeType getRandomTree() {
-        if (RANDOM.nextInt(100) > this.treeDensity) {
+        if (RANDOM.nextInt(100) > this.treeDensity || treeMap.isEmpty()) {
             return null;
         }
         // Get a random number between 0 and the highest cumulative probability
