@@ -79,7 +79,11 @@ public class AirEffect implements Listener {
         }
         // In this case, "water breathing" literally means breathing water!
         if (p.hasPotionEffect(PotionEffectType.WATER_BREATHING)) {
-            return WaterBlock.TOP;
+            return WaterBlock.BOTH;
+        }
+        // Teleporting gives water protection
+        if (addon.getIslands().isGoingHome(User.getInstance(p))) {
+            return WaterBlock.BOTH;
         }
         Location loc = p.getLocation();
         // Top half of player

@@ -29,7 +29,8 @@ public class PoseidonBiomeProvider extends BiomeProvider {
         return switch(worldInfo.getEnvironment()) {
         case NETHER -> addon.getSettings().getDefaultNetherBiome();
         case THE_END -> addon.getSettings().getDefaultEndBiome();
-        default -> addon.getSettings().getDefaultBiome();
+        default -> y <= addon.getSettings().getSeaHeight() ? addon.getSettings().getDefaultSeaBiome()
+                : addon.getSettings().getDefaultAirBiome();
         };
     }
 

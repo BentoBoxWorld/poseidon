@@ -1,6 +1,6 @@
 package world.bentobox.poseidon.world;
 
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
@@ -19,6 +19,7 @@ import org.bukkit.generator.WorldInfo;
 import org.bukkit.util.noise.PerlinOctaveGenerator;
 import org.eclipse.jdt.annotation.NonNull;
 
+import world.bentobox.bentobox.BentoBox;
 import world.bentobox.poseidon.Poseidon;
 
 /**
@@ -45,6 +46,7 @@ public class ChunkGeneratorWorld extends ChunkGenerator {
     NavigableMap<Double, Material> treeMap = new TreeMap<>();
     private PerlinOctaveGenerator gen;
     private NetherPop netherPop;
+    private TestPop testPop;
 
     private record WorldConfig(int seaHeight, int seaFloor, Material waterBlock) {
     }
@@ -71,9 +73,15 @@ public class ChunkGeneratorWorld extends ChunkGenerator {
     @Override
     public List<BlockPopulator> getDefaultPopulators(World world) {
         if (netherPop == null) {
-            netherPop = new NetherPop(addon.getSettings().getMobsPerChunk());
+            netherPop = new NetherPop(addon);
         }
-        return Collections.singletonList(netherPop);
+        if (testPop == null) {
+            testPop = new TestPop(addon);
+        }
+        List<BlockPopulator> result = new ArrayList<>();
+        //result.add(testPop);
+        result.add(netherPop);
+        return result;
     }
 
     // Build the TreeMap with cumulative probabilities
@@ -148,8 +156,13 @@ public class ChunkGeneratorWorld extends ChunkGenerator {
         return true;
     }
 
+    /**
+     * This takes the vanilla caves and if they are in the water turns them into island blocks.
+     * This takes advantage of a quirk where the cave generator makes caves even in water and leaves air blocks
+     */
     @Override
     public void generateCaves(WorldInfo worldInfo, Random random, int chunkX, int chunkZ, ChunkData chunkData) {
+        BentoBox.getInstance().logDebug("Gen cave at " + chunkX + " " + chunkZ);
         if (worldInfo.getEnvironment() == Environment.NORMAL) {
             for (int x = 0; x < 16; x++) {
                 for (int z = 0; z < 16; z++) {

@@ -1,7 +1,6 @@
 package world.bentobox.poseidon.world;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.NavigableMap;
 import java.util.Random;
@@ -14,8 +13,6 @@ import org.bukkit.TreeType;
 import org.bukkit.World;
 import org.bukkit.World.Environment;
 import org.bukkit.block.Block;
-import org.bukkit.block.data.BlockData;
-import org.bukkit.entity.EntityType;
 import org.bukkit.generator.BlockPopulator;
 import org.bukkit.generator.LimitedRegion;
 import org.bukkit.generator.WorldInfo;
@@ -25,83 +22,44 @@ import world.bentobox.bentobox.BentoBox;
 import world.bentobox.poseidon.Poseidon;
 
 /**
- * Change mobs to water mobs in the Nether.
+ * Test
  */
-public class NetherPop extends BlockPopulator {
+public class TestPop extends BlockPopulator {
 
-    private static final List<EntityType> WATER_MOBS = List.of(EntityType.DROWNED, EntityType.GUARDIAN,
-            EntityType.ELDER_GUARDIAN, EntityType.GLOW_SQUID, EntityType.SQUID, EntityType.DROWNED, EntityType.DROWNED,
-            EntityType.DROWNED, EntityType.GLOW_SQUID);
     private static final Random RANDOM = new Random();
     private static NavigableMap<Double, TreeType> treeMap = new TreeMap<>();
 
-    private final int maxMobsPerChunk;
-    private double seaHeight;
+    private Poseidon addon;
 
-    public NetherPop(Poseidon addon) {
-        maxMobsPerChunk = addon.getSettings().getMobsPerChunk();
+    public TestPop(Poseidon addon) {
+        super();
+        this.addon = addon;
         treeMap = buildProbabilityTree(addon.getSettings().getTreeTypes());
-        seaHeight = addon.getSettings().getSeaHeight();
     }
 
     @Override
     public void populate(WorldInfo worldInfo, Random random, int chunkX, int chunkZ, LimitedRegion limitedRegion) {
-        if (worldInfo.getEnvironment() == Environment.NORMAL) {
-            normalPop(worldInfo, random, chunkX, chunkZ, limitedRegion);
+        if (worldInfo.getEnvironment() != Environment.NORMAL) {
             return;
         }
-        if (worldInfo.getEnvironment() != Environment.NETHER) {
-            return;
-        }
-
-        // Calculate the chunk's world coordinates
-        int startX = chunkX << 4;
-        int startZ = chunkZ << 4;
-
-        // Spawn a limited number of water mobs
-        for (int i = 0; i < maxMobsPerChunk; i++) {
-            // Randomly select a block within the chunk
-            int x = startX + random.nextInt(16);
-            int z = startZ + random.nextInt(16);
-            int y = random.nextInt(worldInfo.getMaxHeight());
-
-            BlockData block = limitedRegion.getBlockData(x, y, z);
-
-            // Check if the block is water
-            if (block.getMaterial() == Material.WATER) {
-                // Randomly choose a water mob type
-                EntityType mobType = WATER_MOBS.stream().skip(random.nextInt(WATER_MOBS.size())).findFirst()
-                        .orElse(EntityType.DROWNED);
-
-                // Spawn the mob at the water block's location
-                Location spawnLocation = new Location(Bukkit.getWorld(worldInfo.getUID()), x, y, z);
-                limitedRegion.spawnEntity(spawnLocation, mobType);
-            }
-        }
-    }
-
-    private void normalPop(WorldInfo worldInfo, Random random, int chunkX, int chunkZ, LimitedRegion limitedRegion) {
         BentoBox.getInstance().logDebug("Block populator for " + chunkX + " " + chunkZ);
         World world = Bukkit.getWorld(worldInfo.getUID());
         // Check if this is at sea level
         for (int x = 0; x < 16; x++) {
             for (int z = 0; z < 16; z++) {
-                Location loc = new Location(world, (chunkX << 4) + x, seaHeight,
+                Location loc = new Location(world, (chunkX << 4) + x, addon.getSettings().getSeaHeight(),
                         (chunkZ << 4) + z);
                 if (limitedRegion.isInRegion(loc)) {
-                    BlockData bd = limitedRegion.getBlockData(loc);
-                    if (bd.getMaterial() == Material.GRASS_BLOCK || bd.getMaterial() == Material.DIRT) {
+                    Block bd = loc.getBlock();
+                    if (bd.getType() == Material.GRASS_BLOCK || bd.getType() == Material.DIRT) {
                         loc = loc.add(new Vector(0, 1, 0));
                         // Pick a random tree
-                        limitedRegion.generateTree(loc, RANDOM, getRandomTree());
+                        // limitedRegion.generateTree(loc, RANDOM, getRandomTree());
                         BentoBox.getInstance().logDebug("generrate tree at " + loc + " of type " + getRandomTree());
                     }
-                } else {
-                    BentoBox.getInstance().logDebug("Not in limited region");
                 }
             }
         }
-
     }
 
     // Build the TreeMap with cumulative probabilities

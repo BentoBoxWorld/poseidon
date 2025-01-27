@@ -3,14 +3,14 @@
   "icon": "RECOVERY_COMPASS",
   "displayName": "Shipwrecked!",
   "description": [
-    "Shipwrecked!",
-    "But somehow",
-    "you are alive!",
-    "The water took you!"
+    "&a Shipwrecked!",
+    "&a But somehow",
+    "&a you are alive!",
+    "&a The water took you!"
   ],
   "requirePermission": false,
   "blueprints": {
-    "NORMAL": "drowned-wreck"
+    "NORMAL": "trialwreck"
   },
   "slot": 3,
   "times": 0

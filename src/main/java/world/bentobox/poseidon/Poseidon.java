@@ -1,5 +1,6 @@
 package world.bentobox.poseidon;
 
+import java.io.File;
 import java.util.Objects;
 
 import org.bukkit.Bukkit;
@@ -20,7 +21,7 @@ import world.bentobox.bentobox.api.configuration.WorldSettings;
 import world.bentobox.bentobox.lists.Flags;
 import world.bentobox.poseidon.commands.IslandAboutCommand;
 import world.bentobox.poseidon.listeners.AirEffect;
-import world.bentobox.poseidon.listeners.IslandChunkPopulator;
+import world.bentobox.poseidon.listeners.IslandTreeGrower;
 import world.bentobox.poseidon.world.ChunkGeneratorWorld;
 import world.bentobox.poseidon.world.PoseidonBiomeProvider;
 import world.bentobox.poseidon.world.Pregenerator;
@@ -115,31 +116,32 @@ public class Poseidon extends GameModeAddon {
     @Override
     public void createWorlds() {
         String worldName = settings.getWorldName().toLowerCase();
-        if (Bukkit.getWorld(worldName) == null) {
-            log("Creating the sea kingdom...");
-            logWarning("The error 'No key layers in MapLike[{}]' is normal and not an error. You can ignore it.");
-        }
+        if (!new File(Bukkit.getWorldContainer(), worldName).isDirectory()) {
+                log("Creating the sea kingdom...");
+                logWarning("The error 'No key layers in MapLike[{}]' is normal and not an error. You can ignore it.");
+            }
         // Create the world if it does not exist
         chunkGenerator = new ChunkGeneratorWorld(this);
         islandWorld = getWorld(worldName, World.Environment.NORMAL, chunkGenerator);
         // Make the nether if it does not exist
         if (settings.isNetherGenerate()) {
-            if (Bukkit.getWorld(worldName + NETHER) == null) {
+            if (!new File(Bukkit.getWorldContainer(), worldName + NETHER).isDirectory()) {
                 log("Creating the sea kingdom's Nether...");
-                logWarning("The error 'No key layers in MapLike[{}]' is normal and not an error. You can ignore it.");
-            }
+                    logWarning(
+                            "The error 'No key layers in MapLike[{}]' is normal and not an error. You can ignore it.");
+                }
             netherWorld = settings.isNetherIslands() ? getWorld(worldName, World.Environment.NETHER, chunkGenerator) : getWorld(worldName, World.Environment.NETHER, null);
         }
         // Make the end if it does not exist
         if (settings.isEndGenerate()) {
-            if (Bukkit.getWorld(worldName + THE_END) == null) {
+            if (!new File(Bukkit.getWorldContainer(), worldName + THE_END).isDirectory()) {
                 log("Creating the sea kingdom's End World...");
                 logWarning("The error 'No key layers in MapLike[{}]' is normal and not an error. You can ignore it.");
             }
             endWorld = settings.isEndIslands() ? getWorld(worldName, World.Environment.THE_END, chunkGenerator) : getWorld(worldName, World.Environment.THE_END, null);
         }
         // Grow trees
-        this.registerListener(new IslandChunkPopulator(this));
+        this.registerListener(new IslandTreeGrower(this));
         // Pregen
         Pregenerator pregen = new Pregenerator(this);
         pregen.start(getOverWorld(), 10);

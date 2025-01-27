@@ -11,6 +11,7 @@ import java.util.Set;
 import org.bukkit.Difficulty;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
+import org.bukkit.TreeType;
 import org.bukkit.block.Biome;
 import org.bukkit.entity.EntityType;
 
@@ -86,6 +87,10 @@ public class Settings implements WorldSettings {
     @ConfigComment("Island tree generation random. The bigger the number, the fewer the trees will generate.")
     @ConfigEntry(path = "world.island-trees")
     private int islandTrees = 50;
+
+    @ConfigComment("Island tree types. List type and protbability of growing relative to others in the list")
+    @ConfigEntry(path = "world.island-tree-types")
+    private Map<TreeType, Double> treeTypes;
 
     @ConfigComment("World difficulty setting - PEACEFUL, EASY, NORMAL, HARD")
     @ConfigComment("Other plugins may override this setting")
@@ -200,9 +205,12 @@ public class Settings implements WorldSettings {
     @ConfigEntry(path = "world.default-game-mode")
     private GameMode defaultGameMode = GameMode.SURVIVAL;
 
-    @ConfigComment("The default biome for the overworld")
-    @ConfigEntry(path = "world.default-biome")
-    private Biome defaultBiome = Biome.WARM_OCEAN;
+    @ConfigComment("The default biome for the overworld sea")
+    @ConfigEntry(path = "world.default-sea-biome")
+    private Biome defaultSeaBiome = Biome.WARM_OCEAN;
+    @ConfigComment("The default biome for the overworld air")
+    @ConfigEntry(path = "world.default-air-biome")
+    private Biome defaultAirBiome = Biome.PALE_GARDEN;
     @ConfigComment("The default biome for the nether world (this may affect what mobs can spawn)")
     @ConfigEntry(path = "world.default-nether-biome")
     private Biome defaultNetherBiome = Biome.NETHER_WASTES;
@@ -588,12 +596,6 @@ public class Settings implements WorldSettings {
     @Override
     public int getDeathsMax() {
         return deathsMax;
-    }
-    /**
-     * @return the defaultBiome
-     */
-    public Biome getDefaultBiome() {
-        return defaultBiome;
     }
     /**
      * @return the defaultGameMode
@@ -1041,12 +1043,6 @@ public class Settings implements WorldSettings {
      */
     public void setDeathsMax(int deathsMax) {
         this.deathsMax = deathsMax;
-    }
-    /**
-     * @param defaultBiome the defaultBiome to set
-     */
-    public void setDefaultBiome(Biome defaultBiome) {
-        this.defaultBiome = defaultBiome;
     }
     /**
      * @param defaultGameMode the defaultGameMode to set
@@ -1944,5 +1940,50 @@ public class Settings implements WorldSettings {
      */
     public void setMobsPerChunk(int mobsPerChunk) {
         this.mobsPerChunk = mobsPerChunk;
+    }
+
+    /**
+     * @return the treeTypes
+     */
+    public Map<TreeType, Double> getTreeTypes() {
+        if (treeTypes == null) {
+            treeTypes = new HashMap<>();
+        }
+        return treeTypes;
+    }
+
+    /**
+     * @param treeTypes the treeTypes to set
+     */
+    public void setTreeTypes(Map<TreeType, Double> treeTypes) {
+        this.treeTypes = treeTypes;
+    }
+
+    /**
+     * @return the defaultSeaBiome
+     */
+    public Biome getDefaultSeaBiome() {
+        return defaultSeaBiome;
+    }
+
+    /**
+     * @param defaultSeaBiome the defaultSeaBiome to set
+     */
+    public void setDefaultSeaBiome(Biome defaultSeaBiome) {
+        this.defaultSeaBiome = defaultSeaBiome;
+    }
+
+    /**
+     * @return the defaultAirBiome
+     */
+    public Biome getDefaultAirBiome() {
+        return defaultAirBiome;
+    }
+
+    /**
+     * @param defaultAirBiome the defaultAirBiome to set
+     */
+    public void setDefaultAirBiome(Biome defaultAirBiome) {
+        this.defaultAirBiome = defaultAirBiome;
     }
 }
