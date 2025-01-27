@@ -99,8 +99,6 @@ public class Pregenerator {
         }
         addon.log("Pregenerating chunk at (" + chunkX + ", " + chunkZ + ")...");
         Util.getChunkAtAsync(world, chunkX, chunkZ).thenAccept(chunk -> {
-            Bukkit.getScheduler().runTask(addon.getPlugin(),
-                    () -> addon.log("Chunk at (" + chunkX + ", " + chunkZ + ") generated successfully."));
             if (generateContinuously) {
                 isRunning = false;
                 return;

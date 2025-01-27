@@ -84,9 +84,9 @@ public class Settings implements WorldSettings {
     @ConfigEntry(path = "world.world-name", needsReset = true)
     private String worldName = "poseidon_world";
 
-    @ConfigComment("Island tree generation random. The bigger the number, the fewer the trees will generate.")
+    @ConfigComment("Island tree generation density in %")
     @ConfigEntry(path = "world.island-trees")
-    private int islandTrees = 50;
+    private int islandTrees = 25;
 
     @ConfigComment("Island tree types. List type and protbability of growing relative to others in the list")
     @ConfigEntry(path = "world.island-tree-types")
@@ -1918,6 +1918,9 @@ public class Settings implements WorldSettings {
      * @return the islandTrees
      */
     public int getIslandTrees() {
+        if (islandTrees < 0) {
+            islandTrees = 0;
+        }
         return islandTrees;
     }
 

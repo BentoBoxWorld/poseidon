@@ -21,7 +21,6 @@ import world.bentobox.bentobox.api.configuration.WorldSettings;
 import world.bentobox.bentobox.lists.Flags;
 import world.bentobox.poseidon.commands.IslandAboutCommand;
 import world.bentobox.poseidon.listeners.AirEffect;
-import world.bentobox.poseidon.listeners.IslandTreeGrower;
 import world.bentobox.poseidon.world.ChunkGeneratorWorld;
 import world.bentobox.poseidon.world.PoseidonBiomeProvider;
 import world.bentobox.poseidon.world.Pregenerator;
@@ -140,8 +139,6 @@ public class Poseidon extends GameModeAddon {
             }
             endWorld = settings.isEndIslands() ? getWorld(worldName, World.Environment.THE_END, chunkGenerator) : getWorld(worldName, World.Environment.THE_END, null);
         }
-        // Grow trees
-        this.registerListener(new IslandTreeGrower(this));
         // Pregen
         Pregenerator pregen = new Pregenerator(this);
         pregen.start(getOverWorld(), 10);

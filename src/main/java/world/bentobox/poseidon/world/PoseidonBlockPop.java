@@ -13,7 +13,6 @@ import org.bukkit.Material;
 import org.bukkit.TreeType;
 import org.bukkit.World;
 import org.bukkit.World.Environment;
-import org.bukkit.block.Block;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.entity.EntityType;
 import org.bukkit.generator.BlockPopulator;
@@ -21,13 +20,12 @@ import org.bukkit.generator.LimitedRegion;
 import org.bukkit.generator.WorldInfo;
 import org.bukkit.util.Vector;
 
-import world.bentobox.bentobox.BentoBox;
 import world.bentobox.poseidon.Poseidon;
 
 /**
  * Change mobs to water mobs in the Nether.
  */
-public class NetherPop extends BlockPopulator {
+public class PoseidonBlockPop extends BlockPopulator {
 
     private static final List<EntityType> WATER_MOBS = List.of(EntityType.DROWNED, EntityType.GUARDIAN,
             EntityType.ELDER_GUARDIAN, EntityType.GLOW_SQUID, EntityType.SQUID, EntityType.DROWNED, EntityType.DROWNED,
@@ -37,11 +35,13 @@ public class NetherPop extends BlockPopulator {
 
     private final int maxMobsPerChunk;
     private double seaHeight;
+    private int treeDensity;
 
-    public NetherPop(Poseidon addon) {
+    public PoseidonBlockPop(Poseidon addon) {
         maxMobsPerChunk = addon.getSettings().getMobsPerChunk();
         treeMap = buildProbabilityTree(addon.getSettings().getTreeTypes());
         seaHeight = addon.getSettings().getSeaHeight();
+        treeDensity = addon.getSettings().getIslandTrees();
     }
 
     @Override
@@ -50,9 +50,13 @@ public class NetherPop extends BlockPopulator {
             normalPop(worldInfo, random, chunkX, chunkZ, limitedRegion);
             return;
         }
-        if (worldInfo.getEnvironment() != Environment.NETHER) {
+        if (worldInfo.getEnvironment() == Environment.NETHER) {
+            netherPop(worldInfo, random, chunkX, chunkZ, limitedRegion);
             return;
         }
+    }
+
+    private void netherPop(WorldInfo worldInfo, Random random, int chunkX, int chunkZ, LimitedRegion limitedRegion) {
 
         // Calculate the chunk's world coordinates
         int startX = chunkX << 4;
@@ -78,10 +82,10 @@ public class NetherPop extends BlockPopulator {
                 limitedRegion.spawnEntity(spawnLocation, mobType);
             }
         }
+
     }
 
     private void normalPop(WorldInfo worldInfo, Random random, int chunkX, int chunkZ, LimitedRegion limitedRegion) {
-        BentoBox.getInstance().logDebug("Block populator for " + chunkX + " " + chunkZ);
         World world = Bukkit.getWorld(worldInfo.getUID());
         // Check if this is at sea level
         for (int x = 0; x < 16; x++) {
@@ -93,11 +97,12 @@ public class NetherPop extends BlockPopulator {
                     if (bd.getMaterial() == Material.GRASS_BLOCK || bd.getMaterial() == Material.DIRT) {
                         loc = loc.add(new Vector(0, 1, 0));
                         // Pick a random tree
-                        limitedRegion.generateTree(loc, RANDOM, getRandomTree());
-                        BentoBox.getInstance().logDebug("generrate tree at " + loc + " of type " + getRandomTree());
+                        TreeType type = getRandomTree();
+                        // Do not grow everywhere
+                        if (type != null) {
+                            limitedRegion.generateTree(loc, RANDOM, type);
+                        }
                     }
-                } else {
-                    BentoBox.getInstance().logDebug("Not in limited region");
                 }
             }
         }
@@ -106,7 +111,6 @@ public class NetherPop extends BlockPopulator {
 
     // Build the TreeMap with cumulative probabilities
     private static NavigableMap<Double, TreeType> buildProbabilityTree(Map<TreeType, ?> probabilities) {
-        BentoBox.getInstance().logDebug("Building tree map");
         // Ensure all values in the map are Doubles
         Map<TreeType, Double> correctedMap = ensureDoubleValues(probabilities);
 
@@ -117,12 +121,14 @@ public class NetherPop extends BlockPopulator {
             cumulativeProbability += entry.getValue();
             treeMap.put(cumulativeProbability, entry.getKey());
         }
-        BentoBox.getInstance().logDebug("done");
         return treeMap;
     }
 
     // Select a random tree type based on probabilities
-    public static TreeType getRandomTree() {
+    public TreeType getRandomTree() {
+        if (RANDOM.nextInt(100) > this.treeDensity) {
+            return null;
+        }
         // Get a random number between 0 and the highest cumulative probability
         double randomValue = RANDOM.nextDouble() * treeMap.lastKey();
 
@@ -137,7 +143,11 @@ public class NetherPop extends BlockPopulator {
         for (Map.Entry<TreeType, ?> entry : probabilities.entrySet()) {
             Object value = entry.getValue();
             if (value instanceof Number) {
-                correctedMap.put(entry.getKey(), ((Number) value).doubleValue());
+                // Only positive values
+                double v = ((Number) value).doubleValue();
+                if (v > 0) {
+                    correctedMap.put(entry.getKey(), v);
+                }
             } else {
                 throw new IllegalArgumentException("Value for key " + entry.getKey() + " is not a number: " + value);
             }

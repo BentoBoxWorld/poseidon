@@ -45,8 +45,7 @@ public class ChunkGeneratorWorld extends ChunkGenerator {
             Material.GRANITE, 0.05, Material.ANDESITE, 0.04, Material.COBBLESTONE, 0.05, Material.AIR, 0.05);
     NavigableMap<Double, Material> treeMap = new TreeMap<>();
     private PerlinOctaveGenerator gen;
-    private NetherPop netherPop;
-    private TestPop testPop;
+    private PoseidonBlockPop blockPop;
 
     private record WorldConfig(int seaHeight, int seaFloor, Material waterBlock) {
     }
@@ -72,15 +71,11 @@ public class ChunkGeneratorWorld extends ChunkGenerator {
 
     @Override
     public List<BlockPopulator> getDefaultPopulators(World world) {
-        if (netherPop == null) {
-            netherPop = new NetherPop(addon);
-        }
-        if (testPop == null) {
-            testPop = new TestPop(addon);
+        if (blockPop == null) {
+            blockPop = new PoseidonBlockPop(addon);
         }
         List<BlockPopulator> result = new ArrayList<>();
-        //result.add(testPop);
-        result.add(netherPop);
+        result.add(blockPop);
         return result;
     }
 
@@ -162,7 +157,6 @@ public class ChunkGeneratorWorld extends ChunkGenerator {
      */
     @Override
     public void generateCaves(WorldInfo worldInfo, Random random, int chunkX, int chunkZ, ChunkData chunkData) {
-        BentoBox.getInstance().logDebug("Gen cave at " + chunkX + " " + chunkZ);
         if (worldInfo.getEnvironment() == Environment.NORMAL) {
             for (int x = 0; x < 16; x++) {
                 for (int z = 0; z < 16; z++) {
