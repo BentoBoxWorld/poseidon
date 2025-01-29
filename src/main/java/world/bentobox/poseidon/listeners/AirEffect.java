@@ -8,8 +8,8 @@ import java.util.WeakHashMap;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
-import org.bukkit.block.data.BlockData;
 import org.bukkit.block.data.Levelled;
 import org.bukkit.block.data.Waterlogged;
 import org.bukkit.damage.DamageSource;
@@ -86,14 +86,13 @@ public class AirEffect implements Listener {
             return WaterBlock.BOTH;
         }
         Location loc = p.getLocation();
-        // Top half of player
-        Material top = loc.getBlock().getRelative(BlockFace.UP).getType();
-        // Bottom half
-        Material bot = loc.getBlock().getType();
-        boolean topWater = top == Material.WATER || top == Material.BUBBLE_COLUMN || top == Material.TALL_SEAGRASS
-                || top == Material.SEAGRASS || top.name().contains("_FAN");
-        boolean botWater = bot == Material.WATER || bot == Material.BUBBLE_COLUMN || bot == Material.TALL_SEAGRASS
-                || bot == Material.SEAGRASS || top.name().contains("_FAN");
+        boolean topWater = isWater(loc.getBlock().getRelative(BlockFace.UP));
+        boolean botWater = isWater(loc.getBlock());
+        if (p.isSwimming()) {
+            // If player is swimming, only check the bottom block because they are horizontal
+            return botWater ? WaterBlock.BOTH : WaterBlock.NONE;
+        }
+        // Player is not swimming
         if (topWater && botWater) {
             return WaterBlock.BOTH;
         }
@@ -109,12 +108,11 @@ public class AirEffect implements Listener {
             // Any level of water is fine
             return WaterBlock.BOTTOM;
         }
-        // Check waterlogged blocks
-        BlockData bd = loc.getBlock().getBlockData();
-        if (bd instanceof Waterlogged wl) {
-            return wl.isWaterlogged() ? WaterBlock.BOTTOM : WaterBlock.NONE;
-        }
         return WaterBlock.NONE;
+    }
+
+    private boolean isWater(Block b) {
+        return b.getType() == Material.WATER || b.getBlockData() instanceof Waterlogged wl && wl.isWaterlogged();
     }
 
     @EventHandler(priority = EventPriority.NORMAL)
