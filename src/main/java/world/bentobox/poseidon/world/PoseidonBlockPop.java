@@ -15,9 +15,14 @@ import org.bukkit.World;
 import org.bukkit.World.Environment;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Villager;
+import org.bukkit.entity.Villager.Profession;
+import org.bukkit.entity.Villager.Type;
+import org.bukkit.entity.boat.MangroveChestBoat;
 import org.bukkit.generator.BlockPopulator;
 import org.bukkit.generator.LimitedRegion;
 import org.bukkit.generator.WorldInfo;
+import org.bukkit.loot.LootTables;
 import org.bukkit.util.Vector;
 
 import world.bentobox.poseidon.Poseidon;
@@ -36,12 +41,16 @@ public class PoseidonBlockPop extends BlockPopulator {
     private final int maxMobsPerChunk;
     private double seaHeight;
     private int treeDensity;
+    private int turtleEggs;
+    private double fisherman;
 
     public PoseidonBlockPop(Poseidon addon) {
         maxMobsPerChunk = addon.getSettings().getMobsPerChunk();
         treeMap = buildProbabilityTree(addon.getSettings().getTreeTypes());
         seaHeight = addon.getSettings().getSeaHeight();
         treeDensity = addon.getSettings().getIslandTrees();
+        turtleEggs = addon.getSettings().getTurtleEggs();
+        fisherman = addon.getSettings().getFisherman() / 25600D; // 16 x 16 blocks in chunk
     }
 
     @Override
@@ -87,6 +96,8 @@ public class PoseidonBlockPop extends BlockPopulator {
 
     private void normalPop(WorldInfo worldInfo, Random random, int chunkX, int chunkZ, LimitedRegion limitedRegion) {
         World world = Bukkit.getWorld(worldInfo.getUID());
+        boolean fishermanInChunk = false;
+        int maxTurtleEggsPerChunk = 8;
         // Check if this is at sea level
         for (int x = 0; x < 16; x++) {
             for (int z = 0; z < 16; z++) {
@@ -94,6 +105,40 @@ public class PoseidonBlockPop extends BlockPopulator {
                         (chunkZ << 4) + z);
                 if (limitedRegion.isInRegion(loc)) {
                     BlockData bd = limitedRegion.getBlockData(loc);
+                    // Turtle eggs
+                    if (bd.getMaterial() == Material.SAND && maxTurtleEggsPerChunk > 0) {
+                        if (random.nextInt(100) < turtleEggs) {
+                            loc = loc.add(new Vector(0, 1, 0));
+                            limitedRegion.setBlockData(loc, Material.TURTLE_EGG.createBlockData());
+                            maxTurtleEggsPerChunk--;
+                        }
+                    }
+
+                    // Fisherman - first surface water block found in chunk
+                    if (bd.getMaterial() == Material.WATER && !fishermanInChunk
+                            && random.nextDouble() < this.fisherman) {
+                        loc = loc.add(new Vector(0, 1, 0));
+                        MangroveChestBoat b = limitedRegion.createEntity(loc, MangroveChestBoat.class);
+                        Villager passenger = limitedRegion.createEntity(loc, Villager.class);
+                        passenger.setProfession(Profession.FISHERMAN);
+                        passenger.setVillagerType(Type.SWAMP);
+                        b.addPassenger(passenger);
+                        limitedRegion.addEntity(b);
+                        limitedRegion.addEntity(passenger);
+                        // Fill chest - for now, just one item
+                        int chance = RANDOM.nextInt(100);
+                        if (chance < 5) {
+                            b.setLootTable(LootTables.FISHING_TREASURE.getLootTable());
+                        } else if (chance < 20) {
+                            b.setLootTable(LootTables.FISHING_JUNK.getLootTable());
+                        } else {
+                            b.setLootTable(LootTables.FISHING_FISH.getLootTable());
+                        }
+                        // Only have one per chunk
+                        fishermanInChunk = true;
+                    }
+
+                    // Tree placement
                     if (bd.getMaterial() == Material.GRASS_BLOCK || bd.getMaterial() == Material.DIRT) {
                         loc = loc.add(new Vector(0, 1, 0));
                         // Pick a random tree
@@ -101,12 +146,14 @@ public class PoseidonBlockPop extends BlockPopulator {
                         // Do not grow everywhere
                         if (type != null) {
                             limitedRegion.generateTree(loc, RANDOM, type);
+                            // Only do one tree per chunk
+                            return;
                         }
                     }
+
                 }
             }
         }
-
     }
 
     // Build the TreeMap with cumulative probabilities

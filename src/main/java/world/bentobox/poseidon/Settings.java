@@ -88,6 +88,14 @@ public class Settings implements WorldSettings {
     @ConfigEntry(path = "world.island-trees")
     private int islandTrees = 25;
 
+    @ConfigComment("Island turtle egg chance to spawn on sand %")
+    @ConfigEntry(path = "world.turtle-eggs")
+    private int turtleEggs = 25;
+
+    @ConfigComment("Chance of fisherman spawning on a water block in a chunk %")
+    @ConfigEntry(path = "world.fisherman")
+    private double fisherman = 0.01;
+
     @ConfigComment("Island tree types. List type and protbability of growing relative to others in the list")
     @ConfigEntry(path = "world.island-tree-types")
     private Map<TreeType, Double> treeTypes;
@@ -1989,4 +1997,32 @@ public class Settings implements WorldSettings {
     public void setDefaultAirBiome(Biome defaultAirBiome) {
         this.defaultAirBiome = defaultAirBiome;
     }
+
+    /**
+     * @return the turtleEggs
+     */
+    public int getTurtleEggs() {
+
+        return turtleEggs;
+    }
+
+    /**
+     * @param turtleEggs the turtleEggs to set
+     */
+    public void setTurtleEggs(int turtleEggs) {
+        this.turtleEggs = turtleEggs;
+    }
+    /**
+     * @return the fisherman
+     */
+    public double getFisherman() {
+        return fisherman;
+    }
+    /**
+     * @param fisherman the fisherman to set
+     */
+    public void setFisherman(double fisherman) {
+        this.fisherman = fisherman;
+    }
+
 }

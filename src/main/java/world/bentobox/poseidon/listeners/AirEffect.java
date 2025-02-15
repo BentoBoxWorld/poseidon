@@ -56,13 +56,13 @@ public class AirEffect implements Listener {
         }, 20L, 20L);
     }
 
-    private void damagePlayer(Player player) {
+    void damagePlayer(Player player) {
         // Reduce player's air
         player.setRemainingAir(0);
         player.damage(addon.getSettings().getAirEffectDamage(), DamageSource.builder(DamageType.WIND_CHARGE).build());
     }
 
-    private enum WaterBlock {
+    enum WaterBlock {
         TOP, BOTTOM, BOTH, NONE
     }
 
@@ -72,7 +72,7 @@ public class AirEffect implements Listener {
      * @param p player
      * @return true if player is safe
      */
-    private WaterBlock isInWater(Player p) {
+    WaterBlock isInWater(Player p) {
         if (!addon.inWorld(p.getLocation())) {
             throw new IllegalStateException(
                     "Player is not in the Poseidon world but the isInWater method was called. Make sure to check if the player is in the world before calling this method.");
@@ -115,7 +115,7 @@ public class AirEffect implements Listener {
         return b.getType() == Material.WATER || b.getBlockData() instanceof Waterlogged wl && wl.isWaterlogged();
     }
 
-    @EventHandler(priority = EventPriority.NORMAL)
+    @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
     public void onPlayerDrinkWater(PlayerItemConsumeEvent e) {
         if (!addon.inWorld(e.getPlayer().getWorld()) || isInWater(e.getPlayer()) != WaterBlock.NONE) {
             // No effect in water
@@ -132,7 +132,7 @@ public class AirEffect implements Listener {
         }
     }
 
-    @EventHandler(priority = EventPriority.NORMAL)
+    @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
     public void onPlayerDeath(PlayerDeathEvent e) {
         // Run in main thread
         Bukkit.getScheduler().runTask(addon.getPlugin(), () -> dryPlayers.remove(e.getEntity()));
@@ -197,6 +197,13 @@ public class AirEffect implements Listener {
             User user = User.getInstance(p);
             user.sendMessage("poseidon.warning");
         }
+    }
+
+    /**
+     * @return the dryPlayers
+     */
+    protected Map<Player, Long> getDryPlayers() {
+        return dryPlayers;
     }
 
 }

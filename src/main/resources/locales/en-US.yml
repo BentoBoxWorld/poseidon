@@ -10,4 +10,8 @@ poseidon:
     line2: "Air is Death!"
     line3: "And Keep Moving!"
   warning: "&c Keep moving to breath!"
+  prefixes:
+    island: 'realm'
+    an-island: 'a realm'
+    islands: 'realms'
     

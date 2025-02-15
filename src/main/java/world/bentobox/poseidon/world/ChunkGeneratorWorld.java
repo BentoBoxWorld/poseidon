@@ -40,9 +40,9 @@ public class ChunkGeneratorWorld extends ChunkGenerator {
             new FloorMats(Material.SANDSTONE, Material.SAND), Environment.THE_END,
             new FloorMats(Material.END_STONE, Material.END_STONE));
     private static final int NOISE_MAX = 25;
-    private static final Map<Material, Double> BASE_BLOCKS = Map.of(Material.STONE, 1D, Material.DIRT, 100D,
-            Material.DIORITE, 0.05, Material.SANDSTONE, 0.1,
-            Material.GRANITE, 0.05, Material.ANDESITE, 0.04, Material.COBBLESTONE, 0.05, Material.AIR, 0.05);
+    private static final Map<Material, Double> BASE_BLOCKS = Map.of(Material.STONE, 1D, Material.DIRT, 80D,
+            Material.DIORITE, 0.05, Material.SANDSTONE, 1D, Material.SAND, 10D, Material.GRANITE, 0.05,
+            Material.ANDESITE, 0.04, Material.COBBLESTONE, 1D, Material.AIR, 0.05);
     NavigableMap<Double, Material> treeMap = new TreeMap<>();
     private PerlinOctaveGenerator gen;
     private PoseidonBlockPop blockPop;
@@ -171,11 +171,14 @@ public class ChunkGeneratorWorld extends ChunkGenerator {
                                 mat = switch (mat) {
                                 case DIRT -> Material.GRASS_BLOCK;
                                 case COBBLESTONE -> Material.DIRT;
-                                case STONE -> Material.GRASS_BLOCK;
+                                case STONE -> Material.SAND;
                                 default -> mat;
                                 };
                             }
                             chunkData.setBlock(x, y, z, mat);
+                            if (mat == Material.SAND) {
+                                chunkData.setBlock(x, y - 1, z, Material.SANDSTONE);
+                            }
                         }
                     }
                 }

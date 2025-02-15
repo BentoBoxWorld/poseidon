@@ -21,6 +21,7 @@ import world.bentobox.bentobox.api.configuration.WorldSettings;
 import world.bentobox.bentobox.lists.Flags;
 import world.bentobox.poseidon.commands.IslandAboutCommand;
 import world.bentobox.poseidon.listeners.AirEffect;
+import world.bentobox.poseidon.listeners.NetherMobs;
 import world.bentobox.poseidon.world.ChunkGeneratorWorld;
 import world.bentobox.poseidon.world.PoseidonBiomeProvider;
 import world.bentobox.poseidon.world.Pregenerator;
@@ -95,6 +96,7 @@ public class Poseidon extends GameModeAddon {
         if (endWorld != null) Flags.BOAT.setDefaultSetting(endWorld, true);
 
         // Register listeners
+        registerListener(new NetherMobs(this));
         // Acid Effects
         registerListener(new AirEffect(this));
     }
