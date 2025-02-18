@@ -112,7 +112,9 @@ public class AirEffect implements Listener {
     }
 
     private boolean isWater(Block b) {
-        return b.getType() == Material.WATER || b.getBlockData() instanceof Waterlogged wl && wl.isWaterlogged();
+        return b.getType() == Material.BUBBLE_COLUMN || b.getType() == Material.WATER
+                || b.getType() == Material.SEAGRASS
+                || b.getBlockData() instanceof Waterlogged wl && wl.isWaterlogged();
     }
 
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
