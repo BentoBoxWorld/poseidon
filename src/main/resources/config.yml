@@ -10,9 +10,9 @@ poseidon:
   # Chance that water mobs will ignore posiedon's children. In percent. Default is 50%
   water-mob-ignore: 50
   command:
-    # Island Command. What command users will run to access their island.
-    island: po
-    # The island admin command.
+    # Realm Command. What command users will run to access their realm.
+    realm: po
+    # The realm admin command.
     admin: padmin
     # The default action for new player command call.
     # Sub-command of main player command that will be run on first player command call.
@@ -30,10 +30,14 @@ world:
   # It acts like a prefix for nether and end (e.g. poseidon_world, poseidon_world_nether, poseidon_world_end)
   # /!\ BentoBox currently does not support changing this value mid-game. If you do need to change it, do a full reset of your databases and worlds.
   world-name: poseidon_world
-  # Island tree generation density in %
-  island-trees: 10
-  # Island tree types. List type and protbability of growing relative to others in the list
-  island-tree-types:
+  # Realm tree generation density in %
+  realm-trees: 25
+  # Realm turtle egg chance to spawn on sand %
+  turtle-eggs: 25
+  # Chance of fisherman spawning on a water block in a chunk %
+  fisherman: 0.01
+  # Realm tree types. List type and protbability of growing relative to others in the list
+  realm-tree-types:
     BROWN_MUSHROOM: 0.1
     TALL_MANGROVE: 0.0
     CHORUS_PLANT: 0.0
@@ -76,17 +80,17 @@ world:
     # Setting to 0 will disable monster spawns, but this is not recommended. Minecraft default is 400.
     # A negative value uses the server default
     ticks-per-monster-spawns: -1
-  # Radius of island in blocks. (So distance between islands is twice this)
+  # Radius of realm in blocks. (So distance between realms is twice this)
   # It is the same for every dimension : Overworld, Nether and End.
   # This value cannot be changed mid-game and the plugin will not start if it is different.
   # /!\ BentoBox currently does not support changing this value mid-game. If you do need to change it, do a full reset of your databases and worlds.
-  distance-between-islands: 400
+  distance-between-realms: 400
   # Default protection range radius in blocks. Cannot be larger than distance.
   # Admins can change protection sizes for players individually using /acid range set <player> <new range>
-  # or set this permission: poseidon.island.range.<number>
+  # or set this permission: poseidon.realm.range.<number>
   protection-range: 100
-  # Start islands at these coordinates. This is where new islands will start in the
-  # world. These must be a factor of your island distance, but the plugin will auto
+  # Start realms at these coordinates. This is where new realms will start in the
+  # world. These must be a factor of your realm distance, but the plugin will auto
   # calculate the closest location on the grid. Islands develop around this location
   # both positively and negatively in a square grid.
   # If none of this makes sense, leave it at 0,0.
@@ -96,14 +100,14 @@ world:
   start-z: 0
   offset-x: 0
   offset-z: 0
-  # Island height - Lowest is 5.
-  # It is the y coordinate of the bedrock block in the blueprint.
-  island-height: 48
-  # The number of concurrent islands a player can have in the world
+  # Blueprint y coordinate of bedrock block.
+  # If the blueprint is set to sink, this value is ignored and the bedrock will rest on the ocean floor.
+  blueprint-height: 50
+  # The number of concurrent realms a player can have in the world
   # A value of 0 will use the BentoBox config.yml default
-  concurrent-islands: 1
-  # Disallow players to have other islands if they are in a team.
-  disallow-team-member-islands: true
+  concurrent-realms: 10
+  # Disallow players to have other realms if they are in a team.
+  disallow-team-member-realms: true
   # Use your own world generator for this world.
   # In this case, the plugin will not generate anything.
   # /!\ This feature is experimental and might not work as expected or might not work at all.
@@ -131,11 +135,11 @@ world:
   # This creates an vanilla decorations in the worlds.
   # /!\ BentoBox currently does not support changing this value mid-game. If you do need to change it, do a full reset of your databases and worlds.
   make-decorations: true
-  # Maximum number of islands in the world. Set to -1 or 0 for unlimited. 
-  # If the number of islands is greater than this number, no new island will be created.
-  max-islands: -1
+  # Maximum number of realms in the world. Set to -1 or 0 for unlimited. 
+  # If the number of realms is greater than this number, no new realm will be created.
+  max-realms: -1
   # The default game mode for this world. Players will be set to this mode when they create
-  # a new island for example. Options are SURVIVAL, CREATIVE, ADVENTURE, SPECTATOR
+  # a new realm for example. Options are SURVIVAL, CREATIVE, ADVENTURE, SPECTATOR
   default-game-mode: SURVIVAL
   # The default biome for the overworld sea
   default-sea-biome: warm_ocean
@@ -154,11 +158,11 @@ world:
     # the nether will not occur. Other plugins may still enable portal usage.
     # Note: Some default challenges will not be possible if there is no nether.
     # Note that with a standard nether all players arrive at the same portal and entering a
-    # portal will return them back to their islands.
+    # portal will return them back to their realms.
     generate: true
-    # Islands in Nether. Change to false for standard vanilla nether.
+    # Realms in Nether. Change to false for standard vanilla nether.
     # /!\ BentoBox currently does not support changing this value mid-game. If you do need to change it, do a full reset of your databases and worlds.
-    islands: true
+    realms: true
     # Number of mobs per chunk in Poseidon nether.
     mobs-per-chunk: 5
     # Poseidon air will be water.
@@ -177,10 +181,10 @@ world:
     # End Nether - if this is false, the end world will not be made and access to
     # the end will not occur. Other plugins may still enable portal usage.
     generate: true
-    # Islands in The End. Change to false for standard vanilla end.
+    # Realms in The End. Change to false for standard vanilla end.
     # /!\ BentoBox currently does not support changing this value mid-game. If you do need to change it, do a full reset of your databases and worlds.
-    islands: true
-    # Sea height in The End. Only operates if end islands is true.
+    realms: true
+    # Sea height in The End. Only operates if end realms is true.
     # Changing mid-game will cause problems!
     # /!\ BentoBox currently does not support changing this value mid-game. If you do need to change it, do a full reset of your databases and worlds.
     sea-height: 80
@@ -193,9 +197,9 @@ world:
     # /!\ This feature is experimental and might not work as expected or might not work at all.
     dragon-spawn: false
   # Removing mobs - this kills all monsters in the vicinity. Benefit is that it helps
-  # players return to their island if the island has been overrun by monsters.
+  # players return to their realm if the realm has been overrun by monsters.
   # This setting is toggled in world flags and set by the settings GUI.
-  # Mob white list - these mobs will NOT be removed when logging in or doing /island
+  # Mob white list - these mobs will NOT be removed when logging in or doing /po
   remove-mobs-whitelist: []
   # World flags. These are boolean settings for various flags for this world
   flags:
@@ -246,8 +250,8 @@ world:
     ITEM_PICKUP: false
     ENTITY_PORTAL_TELEPORT: false
     SPAWNER_SPAWN_EGGS: true
-  # These are the default protection settings for new islands.
-  # The value is the minimum island rank required allowed to do the action
+  # These are the default protection settings for new realms.
+  # The value is the minimum realm rank required allowed to do the action
   # Ranks are: Visitor = 0, Member = 900, Owner = 1000
   default-island-flags:
     HURT_ANIMALS: 500
@@ -342,7 +346,7 @@ world:
     JUKEBOX: 500
     COLLECT_POWDERED_SNOW: 500
     CARTOGRAPHY: 500
-  # These are the default settings for new islands
+  # These are the default settings for new realms
   default-island-settings:
     PVP_END: false
     PVP_NETHER: false
@@ -362,21 +366,21 @@ world:
   # These settings/flags are hidden from users
   # Ops can toggle hiding in-game using SHIFT-LEFT-CLICK on flags in settings
   hidden-flags: []
-  # Visitor banned commands - Visitors to islands cannot use these commands in this world
+  # Visitor banned commands - Visitors to realms cannot use these commands in this world
   visitor-banned-commands: []
   # Falling banned commands - players cannot use these commands when falling
   # if the PREVENT_TELEPORT_WHEN_FALLING world setting flag is active
   falling-banned-commands: []
-island:
+realm:
   # Default max team size
   # Use this permission to set for specific user groups: poseidon.team.maxsize.<number>
   # Permission size cannot be less than the default below.
   max-team-size: 4
-  # Default maximum number of coop rank members per island
+  # Default maximum number of coop rank members per realm
   # Players can have the poseidon.coop.maxsize.<number> permission to be bigger but
   # permission size cannot be less than the default below. 
   max-coop-size: 4
-  # Default maximum number of trusted rank members per island
+  # Default maximum number of trusted rank members per realm
   # Players can have the poseidon.trust.maxsize.<number> permission to be bigger but
   # permission size cannot be less than the default below. 
   max-trusted-size: 4
@@ -387,19 +391,19 @@ island:
   reset:
     # How many resets a player is allowed (manage with /acid reset add/remove/reset/set command)
     # Value of -1 means unlimited, 0 means hardcore - no resets.
-    # Example, 2 resets means they get 2 resets or 3 islands lifetime
+    # Example, 2 resets means they get 2 resets or 3 realms lifetime
     reset-limit: -1
     # Kicked or leaving players lose resets
-    # Players who leave a team will lose an island reset chance
+    # Players who leave a team will lose an realm reset chance
     # If a player has zero resets left and leaves a team, they cannot make a new
-    # island by themselves and can only join a team.
-    # Leave this true to avoid players exploiting free islands
+    # realm by themselves and can only join a team.
+    # Leave this true to avoid players exploiting free realms
     leavers-lose-reset: false
     # Allow kicked players to keep their inventory.
     # Overrides the on-leave inventory reset for kicked players.
     kicked-keep-inventory: false
     on-join:
-      # What the plugin should reset when the player joins or creates an island
+      # What the plugin should reset when the player joins or creates an realm
       # Reset Money - if this is true, will reset the player's money to the starting money
       # Recommendation is that this is set to true, but if you run multi-worlds
       # make sure your economy handles multi-worlds too.
@@ -417,7 +421,7 @@ island:
       # Reset Ender Chest - if true, the player's Ender Chest will be cleared.
       ender-chest: false
     on-leave:
-      # What the plugin should reset when the player leaves or is kicked from an island
+      # What the plugin should reset when the player leaves or is kicked from an realm
       # Reset Money - if this is true, will reset the player's money to the starting money
       # Recommendation is that this is set to true, but if you run multi-worlds
       # make sure your economy handles multi-worlds too.
@@ -434,48 +438,48 @@ island:
       exp: false
       # Reset Ender Chest - if true, the player's Ender Chest will be cleared.
       ender-chest: false
-  create-island-on-first-login:
-    # Toggles the automatic island creation upon the player's first login on your server.
+  create-realm-on-first-login:
+    # Toggles the automatic realm creation upon the player's first login on your server.
     # If set to true,
     #    * Upon connecting to your server for the first time, the player will be told that
-    #     an island will be created for him.
+    #     an realm will be created for him.
     #   * Make sure you have a Blueprint Bundle called "default": this is the one that will
-    #     be used to create the island.
-    #   * An island will be created for the player without needing him to run the create command.
+    #     be used to create the realm.
+    #   * An realm will be created for the player without needing him to run the create command.
     # If set to false, this will disable this feature entirely.
     # Warning:
     #   * If you are running multiple gamemodes on your server, and all of them have
-    #     this feature enabled, an island in all the gamemodes will be created simultaneously.
-    #     However, it is impossible to know on which island the player will be teleported to afterwards.
-    #   * Island creation can be resource-intensive, please consider the options below to help mitigate
+    #     this feature enabled, an realm in all the gamemodes will be created simultaneously.
+    #     However, it is impossible to know on which realm the player will be teleported to afterwards.
+    #   * Realm creation can be resource-intensive, please consider the options below to help mitigate
     #     the potential issues, especially if you expect a lot of players to connect to your server
     #     in a limited period of time.
     enable: false
-    # Time in seconds after the player logged in, before his island gets created.
-    # If set to 0 or less, the island will be created directly upon the player's login.
+    # Time in seconds after the player logged in, before his realm gets created.
+    # If set to 0 or less, the realm will be created directly upon the player's login.
     # It is recommended to keep this value under a minute's time.
     delay: 5
-    # Toggles whether the island creation should be aborted if the player logged off while the
+    # Toggles whether the realm creation should be aborted if the player logged off while the
     # delay (see the option above) has not worn off yet.
     # If set to true,
     #   * If the player has logged off the server while the delay (see the option above) has not
-    #     worn off yet, this will cancel the island creation.
-    #   * If the player relogs afterward, since he will not be recognized as a new player, no island
+    #     worn off yet, this will cancel the realm creation.
+    #   * If the player relogs afterward, since he will not be recognized as a new player, no realm
     #     would be created for him.
-    #   * If the island creation started before the player logged off, it will continue.
-    # If set to false, the player's island will be created even if he went offline in the meantime.
+    #   * If the realm creation started before the player logged off, it will continue.
+    # If set to false, the player's realm will be created even if he went offline in the meantime.
     # Note this option has no effect if the delay (see the option above) is set to 0 or less.
     abort-on-logout: true
-  # Toggles whether the player should be teleported automatically to his island when it is created.
-  # If set to false, the player will be told his island is ready but will have to teleport to his island using the command.
-  teleport-player-to-island-when-created: true
-  # Create Nether or End islands if they are missing when a player goes through a portal.
-  # Nether and End islands are usually pasted when a player makes their island, but if they are
+  # Toggles whether the player should be teleported automatically to his realm when it is created.
+  # If set to false, the player will be told his realm is ready but will have to teleport to his realm using the command.
+  teleport-player-to-realm-when-created: true
+  # Create Nether or End realms if they are missing when a player goes through a portal.
+  # Nether and End realms are usually pasted when a player makes their realm, but if they are
   # missing for some reason, you can switch this on.
   # Note that bedrock removal glitches can exploit this option.
-  create-missing-nether-end-islands: false
+  create-missing-nether-end-realms: false
   commands:
-    # List of commands to run when a player joins an island or creates one.
+    # List of commands to run when a player joins an realm or creates one.
     # These commands are run by the console, unless otherwise stated using the [SUDO] prefix,
     # in which case they are executed by the player.
     # 
@@ -486,7 +490,7 @@ island:
     #    * "[SUDO] bbox version"
     #    * "acid deaths set [player] 0"
     on-join: []
-    # List of commands to run when a player leaves an island, resets his island or gets kicked from it.
+    # List of commands to run when a player leaves an realm, resets his realm or gets kicked from it.
     # These commands are run by the console, unless otherwise stated using the [SUDO] prefix,
     # in which case they are executed by the player.
     # 
@@ -514,11 +518,11 @@ island:
     on-respawn: []
   sethome:
     nether:
-      # Allow setting home in the nether. Only available on nether islands, not vanilla nether.
+      # Allow setting home in the nether. Only available on nether realms, not vanilla nether.
       allow: true
       require-confirmation: true
     the-end:
-      # Allow setting home in the end. Only available on end islands, not vanilla end.
+      # Allow setting home in the end. Only available on end realms, not vanilla end.
       allow: true
       require-confirmation: true
   deaths:
@@ -528,12 +532,12 @@ island:
     max: 10
     # When a player joins a team, reset their death count
     team-join-reset: true
-    # Reset player death count when they start a new island or reset and island
-    reset-on-new-island: true
+    # Reset player death count when they start a new realm or reset and realm
+    reset-on-new-realm: true
   customranks: {}
 protection:
   # Geo restrict mobs.
-  # Mobs that exit the island space where they were spawned will be removed.
+  # Mobs that exit the realm space where they were spawned will be removed.
   geo-limit-settings: []
   # Poseidon blocked mobs.
   # List of mobs that should not spawn in Poseidon.

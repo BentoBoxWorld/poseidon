@@ -54,11 +54,11 @@ public class Settings implements WorldSettings {
     private int ingoreChance = 50;
 
     // Command
-    @ConfigComment("Island Command. What command users will run to access their island.")
-    @ConfigEntry(path = "poseidon.command.island")
+    @ConfigComment("Realm Command. What command users will run to access their realm.")
+    @ConfigEntry(path = "poseidon.command.realm")
     private String playerCommandAliases = "po";
 
-    @ConfigComment("The island admin command.")
+    @ConfigComment("The realm admin command.")
     @ConfigEntry(path = "poseidon.command.admin")
     private String adminCommandAliases = "padmin";
 
@@ -84,11 +84,11 @@ public class Settings implements WorldSettings {
     @ConfigEntry(path = "world.world-name", needsReset = true)
     private String worldName = "poseidon_world";
 
-    @ConfigComment("Island tree generation density in %")
-    @ConfigEntry(path = "world.island-trees")
+    @ConfigComment("Realm tree generation density in %")
+    @ConfigEntry(path = "world.realm-trees")
     private int islandTrees = 25;
 
-    @ConfigComment("Island turtle egg chance to spawn on sand %")
+    @ConfigComment("Realm turtle egg chance to spawn on sand %")
     @ConfigEntry(path = "world.turtle-eggs")
     private int turtleEggs = 25;
 
@@ -96,8 +96,8 @@ public class Settings implements WorldSettings {
     @ConfigEntry(path = "world.fisherman")
     private double fisherman = 0.01;
 
-    @ConfigComment("Island tree types. List type and protbability of growing relative to others in the list")
-    @ConfigEntry(path = "world.island-tree-types")
+    @ConfigComment("Realm tree types. List type and protbability of growing relative to others in the list")
+    @ConfigEntry(path = "world.realm-tree-types")
     private Map<TreeType, Double> treeTypes;
 
     @ConfigComment("World difficulty setting - PEACEFUL, EASY, NORMAL, HARD")
@@ -124,20 +124,20 @@ public class Settings implements WorldSettings {
     @ConfigEntry(path = "world.spawn-limits.ticks-per-monster-spawns")
     private int ticksPerMonsterSpawns = -1;
 
-    @ConfigComment("Radius of island in blocks. (So distance between islands is twice this)")
+    @ConfigComment("Radius of realm in blocks. (So distance between realms is twice this)")
     @ConfigComment("It is the same for every dimension : Overworld, Nether and End.")
     @ConfigComment("This value cannot be changed mid-game and the plugin will not start if it is different.")
-    @ConfigEntry(path = "world.distance-between-islands", needsReset = true)
+    @ConfigEntry(path = "world.distance-between-realms", needsReset = true)
     private int islandDistance = 400;
 
     @ConfigComment("Default protection range radius in blocks. Cannot be larger than distance.")
     @ConfigComment("Admins can change protection sizes for players individually using /acid range set <player> <new range>")
-    @ConfigComment("or set this permission: poseidon.island.range.<number>")
+    @ConfigComment("or set this permission: poseidon.realm.range.<number>")
     @ConfigEntry(path = "world.protection-range", overrideOnChange = true)
     private int islandProtectionRange = 100;
 
-    @ConfigComment("Start islands at these coordinates. This is where new islands will start in the")
-    @ConfigComment("world. These must be a factor of your island distance, but the plugin will auto")
+    @ConfigComment("Start realms at these coordinates. This is where new realms will start in the")
+    @ConfigComment("world. These must be a factor of your realm distance, but the plugin will auto")
     @ConfigComment("calculate the closest location on the grid. Islands develop around this location")
     @ConfigComment("both positively and negatively in a square grid.")
     @ConfigComment("If none of this makes sense, leave it at 0,0.")
@@ -152,18 +152,18 @@ public class Settings implements WorldSettings {
     @ConfigEntry(path = "world.offset-z")
     private int islandZOffset;
 
-    @ConfigComment("Island height - Lowest is 5.")
-    @ConfigComment("It is the y coordinate of the bedrock block in the blueprint.")
-    @ConfigEntry(path = "world.island-height")
-    private int islandHeight = 30;
+    @ConfigComment("Blueprint y coordinate of bedrock block.")
+    @ConfigComment("If the blueprint is set to sink, this value is ignored and the bedrock will rest on the ocean floor.")
+    @ConfigEntry(path = "world.blueprint-height")
+    private int islandHeight = 50;
     
-    @ConfigComment("The number of concurrent islands a player can have in the world")
+    @ConfigComment("The number of concurrent realms a player can have in the world")
     @ConfigComment("A value of 0 will use the BentoBox config.yml default")
-    @ConfigEntry(path = "world.concurrent-islands")
+    @ConfigEntry(path = "world.concurrent-realms")
     private int concurrentIslands = 0;
 
-    @ConfigComment("Disallow players to have other islands if they are in a team.")
-    @ConfigEntry(path = "world.disallow-team-member-islands")
+    @ConfigComment("Disallow players to have other realms if they are in a team.")
+    @ConfigEntry(path = "world.disallow-team-member-realms")
     boolean disallowTeamMemberIslands = true;
 
     @ConfigComment("Use your own world generator for this world.")
@@ -203,13 +203,13 @@ public class Settings implements WorldSettings {
     @ConfigEntry(path = "world.make-decorations", needsReset = true)
     private boolean makeDecorations = true;
 
-    @ConfigComment("Maximum number of islands in the world. Set to -1 or 0 for unlimited. ")
-    @ConfigComment("If the number of islands is greater than this number, no new island will be created.")
-    @ConfigEntry(path = "world.max-islands")
+    @ConfigComment("Maximum number of realms in the world. Set to -1 or 0 for unlimited. ")
+    @ConfigComment("If the number of realms is greater than this number, no new realm will be created.")
+    @ConfigEntry(path = "world.max-realms")
     private int maxIslands = -1;
 
     @ConfigComment("The default game mode for this world. Players will be set to this mode when they create")
-    @ConfigComment("a new island for example. Options are SURVIVAL, CREATIVE, ADVENTURE, SPECTATOR")
+    @ConfigComment("a new realm for example. Options are SURVIVAL, CREATIVE, ADVENTURE, SPECTATOR")
     @ConfigEntry(path = "world.default-game-mode")
     private GameMode defaultGameMode = GameMode.SURVIVAL;
 
@@ -237,12 +237,12 @@ public class Settings implements WorldSettings {
     @ConfigComment("the nether will not occur. Other plugins may still enable portal usage.")
     @ConfigComment("Note: Some default challenges will not be possible if there is no nether.")
     @ConfigComment("Note that with a standard nether all players arrive at the same portal and entering a")
-    @ConfigComment("portal will return them back to their islands.")
+    @ConfigComment("portal will return them back to their realms.")
     @ConfigEntry(path = "world.nether.generate")
     private boolean netherGenerate = true;
 
-    @ConfigComment("Islands in Nether. Change to false for standard vanilla nether.")
-    @ConfigEntry(path = "world.nether.islands", needsReset = true)
+    @ConfigComment("Realms in Nether. Change to false for standard vanilla nether.")
+    @ConfigEntry(path = "world.nether.realms", needsReset = true)
     private boolean netherIslands = true;
 
     @ConfigComment("Number of mobs per chunk in Poseidon nether.")
@@ -272,11 +272,11 @@ public class Settings implements WorldSettings {
     @ConfigEntry(path = "world.end.generate")
     private boolean endGenerate = true;
 
-    @ConfigComment("Islands in The End. Change to false for standard vanilla end.")
-    @ConfigEntry(path = "world.end.islands", needsReset = true)
+    @ConfigComment("Realms in The End. Change to false for standard vanilla end.")
+    @ConfigEntry(path = "world.end.realms", needsReset = true)
     private boolean endIslands = true;
 
-    @ConfigComment("Sea height in The End. Only operates if end islands is true.")
+    @ConfigComment("Sea height in The End. Only operates if end realms is true.")
     @ConfigComment("Changing mid-game will cause problems!")
     @ConfigEntry(path = "world.end.sea-height", needsReset = true)
     private int endSeaHeight = 80;
@@ -294,9 +294,9 @@ public class Settings implements WorldSettings {
     private boolean dragonSpawn = false;
 
     @ConfigComment("Removing mobs - this kills all monsters in the vicinity. Benefit is that it helps")
-    @ConfigComment("players return to their island if the island has been overrun by monsters.")
+    @ConfigComment("players return to their realm if the realm has been overrun by monsters.")
     @ConfigComment("This setting is toggled in world flags and set by the settings GUI.")
-    @ConfigComment("Mob white list - these mobs will NOT be removed when logging in or doing /island")
+    @ConfigComment("Mob white list - these mobs will NOT be removed when logging in or doing /po")
     @ConfigEntry(path = "world.remove-mobs-whitelist")
     private Set<EntityType> removeMobsWhitelist = new HashSet<>();
 
@@ -304,13 +304,13 @@ public class Settings implements WorldSettings {
     @ConfigEntry(path = "world.flags")
     private Map<String, Boolean> worldFlags = new HashMap<>();
 
-    @ConfigComment("These are the default protection settings for new islands.")
-    @ConfigComment("The value is the minimum island rank required allowed to do the action")
+    @ConfigComment("These are the default protection settings for new realms.")
+    @ConfigComment("The value is the minimum realm rank required allowed to do the action")
     @ConfigComment("Ranks are: Visitor = 0, Member = 900, Owner = 1000")
     @ConfigEntry(path = "world.default-island-flags")
     private Map<String, Integer> defaultIslandFlagNames = new HashMap<>();
 
-    @ConfigComment("These are the default settings for new islands")
+    @ConfigComment("These are the default settings for new realms")
     @ConfigEntry(path = "world.default-island-settings")
     @Adapter(FlagBooleanSerializer.class)
     private Map<String, Integer> defaultIslandSettingNames = new HashMap<>();
@@ -320,7 +320,7 @@ public class Settings implements WorldSettings {
     @ConfigEntry(path = "world.hidden-flags")
     private List<String> hiddenFlags = new ArrayList<>();
 
-    @ConfigComment("Visitor banned commands - Visitors to islands cannot use these commands in this world")
+    @ConfigComment("Visitor banned commands - Visitors to realms cannot use these commands in this world")
     @ConfigEntry(path = "world.visitor-banned-commands")
     private List<String> visitorBannedCommands = new ArrayList<>();
 
@@ -335,156 +335,156 @@ public class Settings implements WorldSettings {
     @ConfigComment("Default max team size")
     @ConfigComment("Use this permission to set for specific user groups: poseidon.team.maxsize.<number>")
     @ConfigComment("Permission size cannot be less than the default below.")
-    @ConfigEntry(path = "island.max-team-size")
+    @ConfigEntry(path = "realm.max-team-size")
     private int maxTeamSize = 4;
 
-    @ConfigComment("Default maximum number of coop rank members per island")
+    @ConfigComment("Default maximum number of coop rank members per realm")
     @ConfigComment("Players can have the poseidon.coop.maxsize.<number> permission to be bigger but")
     @ConfigComment("permission size cannot be less than the default below. ")
-    @ConfigEntry(path = "island.max-coop-size")
+    @ConfigEntry(path = "realm.max-coop-size")
     private int maxCoopSize = 4;
 
-    @ConfigComment("Default maximum number of trusted rank members per island")
+    @ConfigComment("Default maximum number of trusted rank members per realm")
     @ConfigComment("Players can have the poseidon.trust.maxsize.<number> permission to be bigger but")
     @ConfigComment("permission size cannot be less than the default below. ")
-    @ConfigEntry(path = "island.max-trusted-size")
+    @ConfigEntry(path = "realm.max-trusted-size")
     private int maxTrustSize = 4;
 
     @ConfigComment("Default maximum number of homes a player can have. Min = 1")
     @ConfigComment("Accessed via /ai sethome <number> or /ai go <number>")
     @ConfigComment("Use this permission to set for specific user groups: poseidon.island.maxhomes.<number>")
-    @ConfigEntry(path = "island.max-homes")
+    @ConfigEntry(path = "realm.max-homes")
     private int maxHomes = 5;
 
     // Reset
     @ConfigComment("How many resets a player is allowed (manage with /acid reset add/remove/reset/set command)")
     @ConfigComment("Value of -1 means unlimited, 0 means hardcore - no resets.")
-    @ConfigComment("Example, 2 resets means they get 2 resets or 3 islands lifetime")
-    @ConfigEntry(path = "island.reset.reset-limit")
+    @ConfigComment("Example, 2 resets means they get 2 resets or 3 realms lifetime")
+    @ConfigEntry(path = "realm.reset.reset-limit")
     private int resetLimit = -1;
 
     @ConfigComment("Kicked or leaving players lose resets")
-    @ConfigComment("Players who leave a team will lose an island reset chance")
+    @ConfigComment("Players who leave a team will lose an realm reset chance")
     @ConfigComment("If a player has zero resets left and leaves a team, they cannot make a new")
-    @ConfigComment("island by themselves and can only join a team.")
-    @ConfigComment("Leave this true to avoid players exploiting free islands")
-    @ConfigEntry(path = "island.reset.leavers-lose-reset")
+    @ConfigComment("realm by themselves and can only join a team.")
+    @ConfigComment("Leave this true to avoid players exploiting free realms")
+    @ConfigEntry(path = "realm.reset.leavers-lose-reset")
     private boolean leaversLoseReset = false;
 
     @ConfigComment("Allow kicked players to keep their inventory.")
     @ConfigComment("Overrides the on-leave inventory reset for kicked players.")
-    @ConfigEntry(path = "island.reset.kicked-keep-inventory")
+    @ConfigEntry(path = "realm.reset.kicked-keep-inventory")
     private boolean kickedKeepInventory = false;
 
-    @ConfigComment("What the plugin should reset when the player joins or creates an island")
+    @ConfigComment("What the plugin should reset when the player joins or creates an realm")
     @ConfigComment("Reset Money - if this is true, will reset the player's money to the starting money")
     @ConfigComment("Recommendation is that this is set to true, but if you run multi-worlds")
     @ConfigComment("make sure your economy handles multi-worlds too.")
-    @ConfigEntry(path = "island.reset.on-join.money")
+    @ConfigEntry(path = "realm.reset.on-join.money")
     private boolean onJoinResetMoney = false;
 
     @ConfigComment("Reset inventory - if true, the player's inventory will be cleared.")
     @ConfigComment("Note: if you have MultiInv running or a similar inventory control plugin, that")
     @ConfigComment("plugin may still reset the inventory when the world changes.")
-    @ConfigEntry(path = "island.reset.on-join.inventory")
+    @ConfigEntry(path = "realm.reset.on-join.inventory")
     private boolean onJoinResetInventory = false;
 
     @ConfigComment("Reset health - if true, the player's health will be reset.")
-    @ConfigEntry(path = "island.reset.on-join.health")
+    @ConfigEntry(path = "realm.reset.on-join.health")
     private boolean onJoinResetHealth = true;
 
     @ConfigComment("Reset hunger - if true, the player's hunger will be reset.")
-    @ConfigEntry(path = "island.reset.on-join.hunger")
+    @ConfigEntry(path = "realm.reset.on-join.hunger")
     private boolean onJoinResetHunger = true;
 
     @ConfigComment("Reset experience points - if true, the player's experience will be reset.")
-    @ConfigEntry(path = "island.reset.on-join.exp")
+    @ConfigEntry(path = "realm.reset.on-join.exp")
     private boolean onJoinResetXP = false;
 
     @ConfigComment("Reset Ender Chest - if true, the player's Ender Chest will be cleared.")
-    @ConfigEntry(path = "island.reset.on-join.ender-chest")
+    @ConfigEntry(path = "realm.reset.on-join.ender-chest")
     private boolean onJoinResetEnderChest = false;
 
-    @ConfigComment("What the plugin should reset when the player leaves or is kicked from an island")
+    @ConfigComment("What the plugin should reset when the player leaves or is kicked from an realm")
     @ConfigComment("Reset Money - if this is true, will reset the player's money to the starting money")
     @ConfigComment("Recommendation is that this is set to true, but if you run multi-worlds")
     @ConfigComment("make sure your economy handles multi-worlds too.")
-    @ConfigEntry(path = "island.reset.on-leave.money")
+    @ConfigEntry(path = "realm.reset.on-leave.money")
     private boolean onLeaveResetMoney = false;
 
     @ConfigComment("Reset inventory - if true, the player's inventory will be cleared.")
     @ConfigComment("Note: if you have MultiInv running or a similar inventory control plugin, that")
     @ConfigComment("plugin may still reset the inventory when the world changes.")
-    @ConfigEntry(path = "island.reset.on-leave.inventory")
+    @ConfigEntry(path = "realm.reset.on-leave.inventory")
     private boolean onLeaveResetInventory = false;
 
     @ConfigComment("Reset health - if true, the player's health will be reset.")
-    @ConfigEntry(path = "island.reset.on-leave.health")
+    @ConfigEntry(path = "realm.reset.on-leave.health")
     private boolean onLeaveResetHealth = false;
 
     @ConfigComment("Reset hunger - if true, the player's hunger will be reset.")
-    @ConfigEntry(path = "island.reset.on-leave.hunger")
+    @ConfigEntry(path = "realm.reset.on-leave.hunger")
     private boolean onLeaveResetHunger = false;
 
     @ConfigComment("Reset experience - if true, the player's experience will be reset.")
-    @ConfigEntry(path = "island.reset.on-leave.exp")
+    @ConfigEntry(path = "realm.reset.on-leave.exp")
     private boolean onLeaveResetXP = false;
 
     @ConfigComment("Reset Ender Chest - if true, the player's Ender Chest will be cleared.")
-    @ConfigEntry(path = "island.reset.on-leave.ender-chest")
+    @ConfigEntry(path = "realm.reset.on-leave.ender-chest")
     private boolean onLeaveResetEnderChest = false;
 
-    @ConfigComment("Toggles the automatic island creation upon the player's first login on your server.")
+    @ConfigComment("Toggles the automatic realm creation upon the player's first login on your server.")
     @ConfigComment("If set to true,")
     @ConfigComment("   * Upon connecting to your server for the first time, the player will be told that")
-    @ConfigComment("    an island will be created for him.")
+    @ConfigComment("    an realm will be created for him.")
     @ConfigComment("  * Make sure you have a Blueprint Bundle called \"default\": this is the one that will")
-    @ConfigComment("    be used to create the island.")
-    @ConfigComment("  * An island will be created for the player without needing him to run the create command.")
+    @ConfigComment("    be used to create the realm.")
+    @ConfigComment("  * An realm will be created for the player without needing him to run the create command.")
     @ConfigComment("If set to false, this will disable this feature entirely.")
     @ConfigComment("Warning:")
     @ConfigComment("  * If you are running multiple gamemodes on your server, and all of them have")
-    @ConfigComment("    this feature enabled, an island in all the gamemodes will be created simultaneously.")
-    @ConfigComment("    However, it is impossible to know on which island the player will be teleported to afterwards.")
-    @ConfigComment("  * Island creation can be resource-intensive, please consider the options below to help mitigate")
+    @ConfigComment("    this feature enabled, an realm in all the gamemodes will be created simultaneously.")
+    @ConfigComment("    However, it is impossible to know on which realm the player will be teleported to afterwards.")
+    @ConfigComment("  * Realm creation can be resource-intensive, please consider the options below to help mitigate")
     @ConfigComment("    the potential issues, especially if you expect a lot of players to connect to your server")
     @ConfigComment("    in a limited period of time.")
-    @ConfigEntry(path = "island.create-island-on-first-login.enable")
+    @ConfigEntry(path = "realm.create-realm-on-first-login.enable")
     private boolean createIslandOnFirstLoginEnabled;
 
-    @ConfigComment("Time in seconds after the player logged in, before his island gets created.")
-    @ConfigComment("If set to 0 or less, the island will be created directly upon the player's login.")
+    @ConfigComment("Time in seconds after the player logged in, before his realm gets created.")
+    @ConfigComment("If set to 0 or less, the realm will be created directly upon the player's login.")
     @ConfigComment("It is recommended to keep this value under a minute's time.")
-    @ConfigEntry(path = "island.create-island-on-first-login.delay")
+    @ConfigEntry(path = "realm.create-realm-on-first-login.delay")
     private int createIslandOnFirstLoginDelay = 5;
 
-    @ConfigComment("Toggles whether the island creation should be aborted if the player logged off while the")
+    @ConfigComment("Toggles whether the realm creation should be aborted if the player logged off while the")
     @ConfigComment("delay (see the option above) has not worn off yet.")
     @ConfigComment("If set to true,")
     @ConfigComment("  * If the player has logged off the server while the delay (see the option above) has not")
-    @ConfigComment("    worn off yet, this will cancel the island creation.")
-    @ConfigComment("  * If the player relogs afterward, since he will not be recognized as a new player, no island")
+    @ConfigComment("    worn off yet, this will cancel the realm creation.")
+    @ConfigComment("  * If the player relogs afterward, since he will not be recognized as a new player, no realm")
     @ConfigComment("    would be created for him.")
-    @ConfigComment("  * If the island creation started before the player logged off, it will continue.")
-    @ConfigComment("If set to false, the player's island will be created even if he went offline in the meantime.")
+    @ConfigComment("  * If the realm creation started before the player logged off, it will continue.")
+    @ConfigComment("If set to false, the player's realm will be created even if he went offline in the meantime.")
     @ConfigComment("Note this option has no effect if the delay (see the option above) is set to 0 or less.")
-    @ConfigEntry(path = "island.create-island-on-first-login.abort-on-logout")
+    @ConfigEntry(path = "realm.create-realm-on-first-login.abort-on-logout")
     private boolean createIslandOnFirstLoginAbortOnLogout = true;
 
-    @ConfigComment("Toggles whether the player should be teleported automatically to his island when it is created.")
-    @ConfigComment("If set to false, the player will be told his island is ready but will have to teleport to his island using the command.")
-    @ConfigEntry(path = "island.teleport-player-to-island-when-created")
+    @ConfigComment("Toggles whether the player should be teleported automatically to his realm when it is created.")
+    @ConfigComment("If set to false, the player will be told his realm is ready but will have to teleport to his realm using the command.")
+    @ConfigEntry(path = "realm.teleport-player-to-realm-when-created")
     private boolean teleportPlayerToIslandUponIslandCreation = true;
 
-    @ConfigComment("Create Nether or End islands if they are missing when a player goes through a portal.")
-    @ConfigComment("Nether and End islands are usually pasted when a player makes their island, but if they are")
+    @ConfigComment("Create Nether or End realms if they are missing when a player goes through a portal.")
+    @ConfigComment("Nether and End realms are usually pasted when a player makes their realm, but if they are")
     @ConfigComment("missing for some reason, you can switch this on.")
     @ConfigComment("Note that bedrock removal glitches can exploit this option.")
-    @ConfigEntry(path = "island.create-missing-nether-end-islands")
+    @ConfigEntry(path = "realm.create-missing-nether-end-realms")
     private boolean pasteMissingIslands = false;
 
     // Commands
-    @ConfigComment("List of commands to run when a player joins an island or creates one.")
+    @ConfigComment("List of commands to run when a player joins an realm or creates one.")
     @ConfigComment("These commands are run by the console, unless otherwise stated using the [SUDO] prefix,")
     @ConfigComment("in which case they are executed by the player.")
     @ConfigComment("")
@@ -494,10 +494,10 @@ public class Settings implements WorldSettings {
     @ConfigComment("Here are some examples of valid commands to execute:")
     @ConfigComment("   * \"[SUDO] bbox version\"")
     @ConfigComment("   * \"acid deaths set [player] 0\"")
-    @ConfigEntry(path = "island.commands.on-join")
+    @ConfigEntry(path = "realm.commands.on-join")
     private List<String> onJoinCommands = new ArrayList<>();
 
-    @ConfigComment("List of commands to run when a player leaves an island, resets his island or gets kicked from it.")
+    @ConfigComment("List of commands to run when a player leaves an realm, resets his realm or gets kicked from it.")
     @ConfigComment("These commands are run by the console, unless otherwise stated using the [SUDO] prefix,")
     @ConfigComment("in which case they are executed by the player.")
     @ConfigComment("")
@@ -509,7 +509,7 @@ public class Settings implements WorldSettings {
     @ConfigComment("   * 'acid deaths set [player] 0'")
     @ConfigComment("")
     @ConfigComment("Note that player-executed commands might not work, as these commands can be run with said player being offline.")
-    @ConfigEntry(path = "island.commands.on-leave")
+    @ConfigEntry(path = "realm.commands.on-leave")
     private List<String> onLeaveCommands = new ArrayList<>();
 
     @ConfigComment("List of commands that should be executed when the player respawns after death if Flags.ISLAND_RESPAWN is true.")
@@ -524,50 +524,50 @@ public class Settings implements WorldSettings {
     @ConfigComment("   * 'bsbadmin deaths set [player] 0'")
     @ConfigComment("")
     @ConfigComment("Note that player-executed commands might not work, as these commands can be run with said player being offline.")
-    @ConfigEntry(path = "island.commands.on-respawn")
+    @ConfigEntry(path = "realm.commands.on-respawn")
     private List<String> onRespawnCommands = new ArrayList<>();
 
     // Sethome
-    @ConfigComment("Allow setting home in the nether. Only available on nether islands, not vanilla nether.")
-    @ConfigEntry(path = "island.sethome.nether.allow")
+    @ConfigComment("Allow setting home in the nether. Only available on nether realms, not vanilla nether.")
+    @ConfigEntry(path = "realm.sethome.nether.allow")
     private boolean allowSetHomeInNether = true;
 
-    @ConfigEntry(path = "island.sethome.nether.require-confirmation")
+    @ConfigEntry(path = "realm.sethome.nether.require-confirmation")
     private boolean requireConfirmationToSetHomeInNether = true;
 
-    @ConfigComment("Allow setting home in the end. Only available on end islands, not vanilla end.")
-    @ConfigEntry(path = "island.sethome.the-end.allow")
+    @ConfigComment("Allow setting home in the end. Only available on end realms, not vanilla end.")
+    @ConfigEntry(path = "realm.sethome.the-end.allow")
     private boolean allowSetHomeInTheEnd = true;
 
-    @ConfigEntry(path = "island.sethome.the-end.require-confirmation")
+    @ConfigEntry(path = "realm.sethome.the-end.require-confirmation")
     private boolean requireConfirmationToSetHomeInTheEnd = true;
 
     // Deaths
     @ConfigComment("Whether deaths are counted or not.")
-    @ConfigEntry(path = "island.deaths.counted")
+    @ConfigEntry(path = "realm.deaths.counted")
     private boolean deathsCounted = true;
 
     @ConfigComment("Maximum number of deaths to count. The death count can be used by add-ons.")
-    @ConfigEntry(path = "island.deaths.max")
+    @ConfigEntry(path = "realm.deaths.max")
     private int deathsMax = 10;
 
     @ConfigComment("When a player joins a team, reset their death count")
-    @ConfigEntry(path = "island.deaths.team-join-reset")
+    @ConfigEntry(path = "realm.deaths.team-join-reset")
     private boolean teamJoinDeathReset = true;
 
-    @ConfigComment("Reset player death count when they start a new island or reset and island")
-    @ConfigEntry(path = "island.deaths.reset-on-new-island")
+    @ConfigComment("Reset player death count when they start a new realm or reset and realm")
+    @ConfigEntry(path = "realm.deaths.reset-on-new-realm")
     private boolean deathsResetOnNewIsland = true;
 
     // Ranks
-    @ConfigEntry(path = "island.customranks")
+    @ConfigEntry(path = "realm.customranks")
     private Map<String, Integer> customRanks = new HashMap<>();
 
     // ---------------------------------------------
 
     /*      PROTECTION      */
     @ConfigComment("Geo restrict mobs.")
-    @ConfigComment("Mobs that exit the island space where they were spawned will be removed.")
+    @ConfigComment("Mobs that exit the realm space where they were spawned will be removed.")
     @ConfigEntry(path = "protection.geo-limit-settings")
     private List<String> geoLimitSettings = new ArrayList<>();
 
@@ -1108,8 +1108,9 @@ public class Settings implements WorldSettings {
     public void setGeoLimitSettings(List<String> geoLimitSettings) {
         this.geoLimitSettings = geoLimitSettings;
     }
+    
     /**
-     * @param islandCommand what you want your island command to be
+     * @param islandCommand what you want your realm command to be
      */
     public void setIslandCommand(String islandCommand) {
         this.playerCommandAliases = islandCommand;
