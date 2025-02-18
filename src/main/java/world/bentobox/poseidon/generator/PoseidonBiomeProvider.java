@@ -1,4 +1,4 @@
-package world.bentobox.poseidon.world;
+package world.bentobox.poseidon.generator;
 
 import java.util.List;
 

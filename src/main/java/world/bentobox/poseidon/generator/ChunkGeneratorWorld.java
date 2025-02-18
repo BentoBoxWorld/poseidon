@@ -1,4 +1,4 @@
-package world.bentobox.poseidon.world;
+package world.bentobox.poseidon.generator;
 
 import java.util.ArrayList;
 import java.util.EnumMap;
@@ -19,7 +19,6 @@ import org.bukkit.generator.WorldInfo;
 import org.bukkit.util.noise.PerlinOctaveGenerator;
 import org.eclipse.jdt.annotation.NonNull;
 
-import world.bentobox.bentobox.BentoBox;
 import world.bentobox.poseidon.Poseidon;
 
 /**
@@ -42,8 +41,8 @@ public class ChunkGeneratorWorld extends ChunkGenerator {
     private static final int NOISE_MAX = 25;
     private static final Map<Material, Double> BASE_BLOCKS = Map.of(Material.STONE, 1D, Material.DIRT, 80D,
             Material.DIORITE, 0.05, Material.SANDSTONE, 1D, Material.SAND, 10D, Material.GRANITE, 0.05,
-            Material.ANDESITE, 0.04, Material.COBBLESTONE, 1D, Material.AIR, 0.05);
-    NavigableMap<Double, Material> treeMap = new TreeMap<>();
+            Material.ANDESITE, 0.04, Material.COBBLESTONE, 0.25D, Material.AIR, 0.05);
+    NavigableMap<Double, Material> baseBlockMap = new TreeMap<>();
     private PerlinOctaveGenerator gen;
     private PoseidonBlockPop blockPop;
 
@@ -85,10 +84,10 @@ public class ChunkGeneratorWorld extends ChunkGenerator {
 
         for (Map.Entry<Material, Double> entry : probabilities.entrySet()) {
             cumulativeProbability += entry.getValue();
-            treeMap.put(cumulativeProbability, entry.getKey());
+            baseBlockMap.put(cumulativeProbability, entry.getKey());
         }
 
-        return treeMap;
+        return baseBlockMap;
     }
 
     @Override
@@ -163,8 +162,8 @@ public class ChunkGeneratorWorld extends ChunkGenerator {
                     for (int y = addon.getSettings().getSeaFloor() + NOISE_MAX; y < Math
                             .min(addon.getSettings().getSeaHeight() + 1, worldInfo.getMaxHeight() - 1); y++) {
                         if (chunkData.getType(x, y, z) == Material.AIR) {
-                            double randomValue = rand.nextDouble() * treeMap.lastKey();
-                            Material mat = treeMap.ceilingEntry(randomValue).getValue();
+                            double randomValue = rand.nextDouble() * baseBlockMap.lastKey();
+                            Material mat = baseBlockMap.ceilingEntry(randomValue).getValue();
                             // Adjust blocks above sea level
                             if (y == addon.getSettings().getSeaHeight()) {
                                 // Top block - do some conversions

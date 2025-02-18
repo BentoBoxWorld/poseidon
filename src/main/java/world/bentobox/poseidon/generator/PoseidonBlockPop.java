@@ -1,4 +1,4 @@
-package world.bentobox.poseidon.world;
+package world.bentobox.poseidon.generator;
 
 import java.util.HashMap;
 import java.util.List;
@@ -23,7 +23,6 @@ import org.bukkit.generator.BlockPopulator;
 import org.bukkit.generator.LimitedRegion;
 import org.bukkit.generator.WorldInfo;
 import org.bukkit.loot.LootTables;
-import org.bukkit.util.Vector;
 
 import world.bentobox.poseidon.Poseidon;
 
@@ -39,7 +38,7 @@ public class PoseidonBlockPop extends BlockPopulator {
     private static NavigableMap<Double, TreeType> treeMap = new TreeMap<>();
 
     private final int maxMobsPerChunk;
-    private double seaHeight;
+    private int seaHeight;
     private int treeDensity;
     private int turtleEggs;
     private double fisherman;
@@ -94,30 +93,49 @@ public class PoseidonBlockPop extends BlockPopulator {
 
     }
 
+    private boolean nearWater(int x, int y, int z, LimitedRegion lr) {
+        // Check around location for water
+        for (int i = -1; i < 2; i++) {
+            for (int j = -1; j < 2; j++) {
+                if (lr.isInRegion(x + i, y, z + j) && lr.getType(x + i, y, z + j) == Material.WATER) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
     private void normalPop(WorldInfo worldInfo, Random random, int chunkX, int chunkZ, LimitedRegion limitedRegion) {
         World world = Bukkit.getWorld(worldInfo.getUID());
         boolean fishermanInChunk = false;
         int maxTurtleEggsPerChunk = 8;
-        // Check if this is at sea level
         for (int x = 0; x < 16; x++) {
             for (int z = 0; z < 16; z++) {
-                Location loc = new Location(world, (chunkX << 4) + x, seaHeight,
-                        (chunkZ << 4) + z);
-                if (limitedRegion.isInRegion(loc)) {
-                    BlockData bd = limitedRegion.getBlockData(loc);
-                    // Turtle eggs
-                    if (bd.getMaterial() == Material.SAND && maxTurtleEggsPerChunk > 0) {
+                int xx = (chunkX << 4) + x;
+                int zz = (chunkZ << 4) + z;
+                int y = seaHeight;
+                if (limitedRegion.isInRegion(xx, y, zz)) {
+                    Material type = limitedRegion.getType(xx, y, zz);
+                    if (type.isSolid() && !nearWater(xx, y, zz, limitedRegion)) {
+                        // Make island centers one block higher
+                        limitedRegion.setType(xx, y + 1, zz, Material.GRASS_BLOCK);
+                        placeTree(limitedRegion, new Location(world, xx, y + 2, zz));
+                        continue;
+                    }
+
+                    // Turtle eggs on the beach only
+                    if (type == Material.SAND && nearWater(xx, y, zz, limitedRegion)
+                            && maxTurtleEggsPerChunk > 0) {
                         if (random.nextInt(100) < turtleEggs) {
-                            loc = loc.add(new Vector(0, 1, 0));
-                            limitedRegion.setBlockData(loc, Material.TURTLE_EGG.createBlockData());
+                            limitedRegion.setType(xx, y + 1, zz, Material.TURTLE_EGG);
                             maxTurtleEggsPerChunk--;
                         }
                     }
 
                     // Fisherman - first surface water block found in chunk
-                    if (bd.getMaterial() == Material.WATER && !fishermanInChunk
+                    if (type == Material.WATER && !fishermanInChunk
                             && random.nextDouble() < this.fisherman) {
-                        loc = loc.add(new Vector(0, 1, 0));
+                        Location loc = new Location(world, xx, y + 1, zz);
                         MangroveChestBoat b = limitedRegion.createEntity(loc, MangroveChestBoat.class);
                         Villager passenger = limitedRegion.createEntity(loc, Villager.class);
                         passenger.setProfession(Profession.FISHERMAN);
@@ -139,20 +157,21 @@ public class PoseidonBlockPop extends BlockPopulator {
                     }
 
                     // Tree placement
-                    if (bd.getMaterial() == Material.GRASS_BLOCK || bd.getMaterial() == Material.DIRT) {
-                        loc = loc.add(new Vector(0, 1, 0));
-                        // Pick a random tree
-                        TreeType type = getRandomTree();
-                        // Do not grow everywhere
-                        if (type != null) {
-                            limitedRegion.generateTree(loc, RANDOM, type);
-                            // Only do one tree per chunk
-                            return;
-                        }
+                    if (type == Material.GRASS_BLOCK || type == Material.DIRT) {
+                        placeTree(limitedRegion, new Location(world, xx, y + 1, zz));
                     }
-
                 }
+
             }
+        }
+    }
+
+    private void placeTree(LimitedRegion limitedRegion, Location loc) {
+        // Pick a random tree
+        TreeType tree = getRandomTree();
+        // Do not grow everywhere
+        if (tree != null) {
+            limitedRegion.generateTree(loc, RANDOM, tree);
         }
     }
 
