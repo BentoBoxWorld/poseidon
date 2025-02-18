@@ -20,11 +20,11 @@ import world.bentobox.bentobox.api.configuration.Config;
 import world.bentobox.bentobox.api.configuration.WorldSettings;
 import world.bentobox.bentobox.lists.Flags;
 import world.bentobox.poseidon.commands.IslandAboutCommand;
+import world.bentobox.poseidon.generator.ChunkGeneratorWorld;
+import world.bentobox.poseidon.generator.PoseidonBiomeProvider;
+import world.bentobox.poseidon.generator.Pregenerator;
 import world.bentobox.poseidon.listeners.AirEffect;
 import world.bentobox.poseidon.listeners.NetherMobs;
-import world.bentobox.poseidon.world.ChunkGeneratorWorld;
-import world.bentobox.poseidon.world.PoseidonBiomeProvider;
-import world.bentobox.poseidon.world.Pregenerator;
 
 /**
  * Add-on to BentoBox that enables under sea exploration
