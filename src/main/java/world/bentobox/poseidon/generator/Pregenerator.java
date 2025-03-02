@@ -9,7 +9,6 @@ import org.bukkit.World;
 import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.Vector;
 
-import world.bentobox.bentobox.BentoBox;
 import world.bentobox.bentobox.util.Util;
 import world.bentobox.poseidon.Poseidon;
 
@@ -78,7 +77,7 @@ public class Pregenerator {
                 Bukkit.getScheduler().runTask(addon.getPlugin(), () -> addon.log("Pregeneration is complete."));
                 return;
             }
-            if (!isRunning) {
+            if (!isRunning && Bukkit.getOnlinePlayers().isEmpty()) {
                 preGen(world);
             }
         }, 0L, 1L);
