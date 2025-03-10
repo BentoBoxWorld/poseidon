@@ -35,7 +35,7 @@ world:
   # Realm turtle egg chance to spawn on sand %
   turtle-eggs: 25
   # Chance of fisherman spawning on a water block in a chunk %
-  fisherman: 0.01
+  fisherman: 3
   # Realm tree types. List type and protbability of growing relative to others in the list
   realm-tree-types:
     BROWN_MUSHROOM: 0.1
