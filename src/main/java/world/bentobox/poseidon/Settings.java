@@ -49,9 +49,10 @@ public class Settings implements WorldSettings {
     @ConfigEntry(path = "poseidon.air-effect.water-effect-time")
     private int waterEffectTime = 30;
 
-    @ConfigComment("Chance that water mobs will ignore posiedon's children. In percent. Default is 50%")
+    @ConfigComment("Chance that water mobs will ignore posiedon's children. In percent.")
+    @ConfigComment("Makes game easier..")
     @ConfigEntry(path = "poseidon.water-mob-ignore")
-    private int ingoreChance = 50;
+    private int ingoreChance = 0;
 
     // Command
     @ConfigComment("Realm Command. What command users will run to access their realm.")
