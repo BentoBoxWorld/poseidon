@@ -132,7 +132,7 @@ public class Settings implements WorldSettings {
     private int islandDistance = 400;
 
     @ConfigComment("Default protection range radius in blocks. Cannot be larger than distance.")
-    @ConfigComment("Admins can change protection sizes for players individually using /acid range set <player> <new range>")
+    @ConfigComment("Admins can change protection sizes for players individually using /padmin range set <player> <new range>")
     @ConfigComment("or set this permission: poseidon.realm.range.<number>")
     @ConfigEntry(path = "world.protection-range", overrideOnChange = true)
     private int islandProtectionRange = 200;
@@ -363,7 +363,7 @@ public class Settings implements WorldSettings {
     private int maxHomes = 5;
 
     // Reset
-    @ConfigComment("How many resets a player is allowed (manage with /acid reset add/remove/reset/set command)")
+    @ConfigComment("How many resets a player is allowed (manage with /padmin reset add/remove/reset/set command)")
     @ConfigComment("Value of -1 means unlimited, 0 means hardcore - no resets.")
     @ConfigComment("Example, 2 resets means they get 2 resets or 3 realms lifetime")
     @ConfigEntry(path = "realm.reset.reset-limit")
@@ -499,7 +499,7 @@ public class Settings implements WorldSettings {
     @ConfigComment("")
     @ConfigComment("Here are some examples of valid commands to execute:")
     @ConfigComment("   * \"[SUDO] bbox version\"")
-    @ConfigComment("   * \"acid deaths set [player] 0\"")
+    @ConfigComment("   * \"padmin deaths set [player] 0\"")
     @ConfigEntry(path = "realm.commands.on-join")
     private List<String> onJoinCommands = new ArrayList<>();
 
@@ -512,7 +512,7 @@ public class Settings implements WorldSettings {
     @ConfigComment("")
     @ConfigComment("Here are some examples of valid commands to execute:")
     @ConfigComment("   * '[SUDO] bbox version'")
-    @ConfigComment("   * 'acid deaths set [player] 0'")
+    @ConfigComment("   * 'padmin deaths set [player] 0'")
     @ConfigComment("")
     @ConfigComment("Note that player-executed commands might not work, as these commands can be run with said player being offline.")
     @ConfigEntry(path = "realm.commands.on-leave")

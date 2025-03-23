@@ -7,7 +7,8 @@ poseidon:
     damage: 2
     # The time drinking water will prevent damage from air in seconds. Drinking water is the same as drinking a water breathing potion.
     water-effect-time: 30
-  # Chance that water mobs will ignore posiedon's children. In percent. Default is 50%
+  # Chance that water mobs will ignore posiedon's children. In percent.
+  # Makes game easier..
   water-mob-ignore: 50
   command:
     # Realm Command. What command users will run to access their realm.
@@ -35,11 +36,11 @@ world:
   # Realm turtle egg chance to spawn on sand %
   turtle-eggs: 25
   # Chance of fisherman spawning on a water block in a chunk %
-  fisherman: 3
+  fisherman: 1.0
   # Realm tree types. List type and protbability of growing relative to others in the list
   realm-tree-types:
     BROWN_MUSHROOM: 0.1
-    TALL_MANGROVE: 0.0
+    TALL_MANGROVE: 0.05
     CHORUS_PLANT: 0.0
     PALE_OAK_CREAKING: 0.07
     DARK_OAK: 0.1
@@ -49,19 +50,19 @@ world:
     JUNGLE_BUSH: 0.0
     PALE_OAK: 0.07
     MANGROVE: 10
-    TALL_REDWOOD: 0.0
-    BIG_TREE: 0.0
-    JUNGLE: 0.0
+    TALL_REDWOOD: 0.03
+    BIG_TREE: 0.02
+    JUNGLE: 0.05
     ACACIA: 0.2
     COCOA_TREE: 0.08
-    SMALL_JUNGLE: 0.0
+    SMALL_JUNGLE: 0.05
     WARPED_FUNGUS: 0.0
     MEGA_PINE: 0.09
     CHERRY: 0.07
-    TALL_BIRCH: 0.0
+    TALL_BIRCH: 0.08
     TREE: 1
+    SWAMP: 0.1
     REDWOOD: 0.1
-    SWAMP: 0.0
     RED_MUSHROOM: 0.05
     AZALEA: 0.1
   # World difficulty setting - PEACEFUL, EASY, NORMAL, HARD
@@ -86,9 +87,9 @@ world:
   # /!\ BentoBox currently does not support changing this value mid-game. If you do need to change it, do a full reset of your databases and worlds.
   distance-between-realms: 400
   # Default protection range radius in blocks. Cannot be larger than distance.
-  # Admins can change protection sizes for players individually using /acid range set <player> <new range>
+  # Admins can change protection sizes for players individually using /padmin range set <player> <new range>
   # or set this permission: poseidon.realm.range.<number>
-  protection-range: 100
+  protection-range: 200
   # Start realms at these coordinates. This is where new realms will start in the
   # world. These must be a factor of your realm distance, but the plugin will auto
   # calculate the closest location on the grid. Islands develop around this location
@@ -178,7 +179,7 @@ world:
     # or creates a new portal, if there is not a portal in that dimension.
     create-and-link-portals: false
   end:
-    # End Nether - if this is false, the end world will not be made and access to
+    # The End - if this is false, the end world will not be made and access to
     # the end will not occur. Other plugins may still enable portal usage.
     generate: true
     # Realms in The End. Change to false for standard vanilla end.
@@ -188,6 +189,10 @@ world:
     # Changing mid-game will cause problems!
     # /!\ BentoBox currently does not support changing this value mid-game. If you do need to change it, do a full reset of your databases and worlds.
     sea-height: 80
+    # Sea floor in The End. Only operates if end realms is true.
+    # Changing mid-game will cause problems!
+    # /!\ BentoBox currently does not support changing this value mid-game. If you do need to change it, do a full reset of your databases and worlds.
+    sea-floor: 0
     # Water block. This should usually stay as WATER, but may be LAVA for fun
     # /!\ BentoBox currently does not support changing this value mid-game. If you do need to change it, do a full reset of your databases and worlds.
     water-block: water
@@ -203,53 +208,128 @@ world:
   remove-mobs-whitelist: []
   # World flags. These are boolean settings for various flags for this world
   flags:
-    OBSIDIAN_SCOOPING: true
-    CREEPER_DAMAGE: true
+    DRAGON_EGG: false
     ISLAND_RESPAWN: true
     CREEPER_GRIEFING: false
-    WORLD_BLOCK_EXPLODE_DAMAGE: false
-    VISITOR_KEEP_INVENTORY: false
-    BUCKET: false
     PETS_STAY_AT_HOME: true
-    DOOR: true
     NATURAL_SPAWNING_OUTSIDE_RANGE: true
-    PODZOL: false
-    TRAPDOOR: true
-    FURNACE: false
-    PLACE_BLOCKS: false
-    LIQUIDS_FLOWING_OUT: false
+    HURT_TAMED_ANIMALS: false
     ANVIL: false
-    CROP_PLANTING: false
     VISITOR_TRIGGER_RAID: true
-    REMOVE_MOBS: true
+    TRAPPED_CHEST: false
     ENDER_CHEST: false
-    ENCHANTING: true
-    TREES_GROWING_OUTSIDE_RANGE: false
-    WITHER_DAMAGE: false
+    TREES_GROWING_OUTSIDE_RANGE: true
+    BOOKSHELF: false
     HARVEST: false
-    BOAT: true
+    FROST_WALKER: false
     PISTON_PUSH: true
-    COARSE_DIRT_TILLING: true
+    COLLECT_LAVA: false
+    LEVER: false
     HURT_MONSTERS: false
-    ENDERMAN_GRIEFING: true
-    GATE: true
+    CAKE: false
     CLEAN_SUPER_FLAT: false
     SIGN_EDITING: false
-    CHEST_DAMAGE: false
     TRADING: true
+    EGGS: false
+    CHEST: false
+    ENTER_EXIT_MESSAGES: true
+    FLINT_AND_STEEL: false
+    SCULK_SENSOR: true
+    CROP_TRAMPLE: false
+    ENTITY_PORTAL_TELEPORT: false
+    DROPPER: false
+    OBSIDIAN_SCOOPING: true
+    TNT_PRIMING: false
+    COLLECT_WATER: false
+    AXOLOTL_SCOOPING: false
+    WORLD_BLOCK_EXPLODE_DAMAGE: false
+    BUTTON: false
+    COMPOSTER: false
+    TRAPDOOR: true
+    EXPERIENCE_BOTTLE_THROWING: false
+    DYE: false
+    HIVE: false
+    ITEM_FRAME: false
+    CROP_PLANTING: false
+    CRAFTING: true
+    ENCHANTING: true
+    SHEARING: false
+    BOAT: true
+    BED: false
+    SPAWN_EGGS: false
+    SCULK_SHRIEKER: true
+    SMITHING: false
+    CHEST_DAMAGE: false
+    EXPERIENCE_PICKUP: false
     PREVENT_TELEPORT_WHEN_FALLING: false
     WORLD_TNT_DAMAGE: false
-    ITEM_DROP: false
-    ENTER_EXIT_MESSAGES: true
+    HOPPER: false
+    CANDLES: false
+    LEASH: false
     BREAK_BLOCKS: false
+    MOUNT_INVENTORY: false
     OFFLINE_REDSTONE: true
+    JUKEBOX: false
+    POTION_THROWING: false
+    SPAWNER_SPAWN_EGGS: false
+    HURT_ANIMALS: false
+    LOOM: false
+    REDSTONE: false
+    VISITOR_KEEP_INVENTORY: false
+    BUCKET: false
+    ENDER_PEARL: false
+    BELL_RINGING: true
+    DOOR: true
+    PODZOL: false
+    BREAK_HOPPERS: false
+    FURNACE: false
+    LIQUIDS_FLOWING_OUT: true
+    MINECART: false
+    FISH_SCOOPING: false
+    END_PORTAL: false
+    BREEDING: false
+    HURT_VILLAGERS: false
+    WITHER_DAMAGE: false
+    CHALLENGES_ISLAND_PROTECTION: false
+    TURTLE_EGGS: false
+    BREAK_SPAWNERS: false
+    ELYTRA: false
+    COARSE_DIRT_TILLING: false
+    RIDING: false
+    ARMOR_STAND: false
+    NAME_TAG: false
+    ENDERMAN_GRIEFING: true
+    ITEM_DROP: false
+    NOTE_BLOCK: false
+    NETHER_PORTAL: false
     REMOVE_END_EXIT_ISLAND: true
-    CONTAINER: false
+    LECTERN: false
     OFFLINE_GROWTH: true
-    ITEM_FRAME_DAMAGE: false
+    SHULKER_BOX: false
+    GRINDSTONE: false
     ITEM_PICKUP: false
-    ENTITY_PORTAL_TELEPORT: false
-    SPAWNER_SPAWN_EGGS: true
+    BREWING: false
+    CREEPER_DAMAGE: true
+    STONECUTTING: false
+    FIRE_EXTINGUISH: false
+    ITEMS_ADDER_EXPLOSIONS: false
+    ALLAY: true
+    BEACON: false
+    PRESSURE_PLATE: false
+    PLACE_BLOCKS: false
+    REMOVE_MOBS: true
+    FLOWER_POT: false
+    ISLAND_FLY_PROTECTION: true
+    MILKING: false
+    DISPENSER: false
+    GATE: true
+    CHALLENGES_WORLD_PROTECTION: true
+    CHORUS_FRUIT: false
+    CONTAINER: false
+    ITEM_FRAME_DAMAGE: false
+    BARREL: false
+    COLLECT_POWDERED_SNOW: false
+    CARTOGRAPHY: false
   # These are the default protection settings for new realms.
   # The value is the minimum realm rank required allowed to do the action
   # Ranks are: Visitor = 0, Member = 900, Owner = 1000
@@ -357,6 +437,7 @@ world:
     SHULKER_TELEPORT: true
     FIRE_SPREAD: true
     FIRE_BURNING: true
+    COMMAND_RANKS: true
     PVP_OVERWORLD: false
     MONSTER_SPAWNERS_SPAWN: true
     TNT_DAMAGE: true
@@ -389,7 +470,7 @@ realm:
   # Use this permission to set for specific user groups: poseidon.island.maxhomes.<number>
   max-homes: 5
   reset:
-    # How many resets a player is allowed (manage with /acid reset add/remove/reset/set command)
+    # How many resets a player is allowed (manage with /padmin reset add/remove/reset/set command)
     # Value of -1 means unlimited, 0 means hardcore - no resets.
     # Example, 2 resets means they get 2 resets or 3 realms lifetime
     reset-limit: -1
@@ -488,7 +569,7 @@ realm:
     # 
     # Here are some examples of valid commands to execute:
     #    * "[SUDO] bbox version"
-    #    * "acid deaths set [player] 0"
+    #    * "padmin deaths set [player] 0"
     on-join: []
     # List of commands to run when a player leaves an realm, resets his realm or gets kicked from it.
     # These commands are run by the console, unless otherwise stated using the [SUDO] prefix,
@@ -499,7 +580,7 @@ realm:
     # 
     # Here are some examples of valid commands to execute:
     #    * '[SUDO] bbox version'
-    #    * 'acid deaths set [player] 0'
+    #    * 'padmin deaths set [player] 0'
     # 
     # Note that player-executed commands might not work, as these commands can be run with said player being offline.
     on-leave: []
@@ -548,3 +629,4 @@ protection:
 do-not-edit-these-settings:
   # These settings should not be edited
   reset-epoch: 0
+
