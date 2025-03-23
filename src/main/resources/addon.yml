@@ -1,0 +1,155 @@
+name: Poseidon
+main: world.bentobox.poseidon.Poseidon
+version: ${version}${build.number}
+api-version: 3.2.3
+metrics: true
+repository: "BentoBoxWorld/Poseidon"
+icon: "TRIDENT"
+
+authors: tastybento
+
+permissions: 
+  poseidon.admin.clearresetall: 
+    default: op
+    description: "Allow clearing of island reset limit of all players"
+  poseidon.admin.delete: 
+    default: op
+    description: "Let a player completely remove a player (including island)"
+  poseidon.admin.noban: 
+    default: op
+    description: "Player cannot be banned from an island"
+  poseidon.admin.noexpel: 
+    default: op
+    description: "Player cannot be expelled from an island"
+  poseidon.admin.register: 
+    default: op
+    description: "Let a player register the nearest island to another player."
+  poseidon.admin.reload: 
+    default: op
+    description: "Reload the config.yml"
+  poseidon.admin.setlanguage: 
+    default: op
+    description: "Resets all player languages and sets the default language"
+  poseidon.admin.setrange: 
+    default: op
+    description: "Allows setting of island protection range"
+  poseidon.admin.setspawn: 
+    default: op
+    description: "Allows use of spawn tools"
+  poseidon.admin.settingsreset: 
+    default: op
+    description: "Resets all the islands to default protection settings"
+  poseidon.admin.tp: 
+    default: op
+    description: "Allows teleport to an island"
+  poseidon.admin.unregister: 
+    default: op
+    description: "Removes a player from an island without deleting the island blocks."
+  poseidon.island: 
+    default: true
+    description: "Allow island command usage"
+  poseidon.island.ban: 
+    default: true
+    description: "Allows banning of visitors"
+  poseidon.island.create: 
+    default: true
+    description: "Allow island creation"
+  poseidon.island.expel: 
+    default: true
+    description: "Allows expelling of visitors"
+  poseidon.island.home: 
+    default: true
+    description: "Allow teleporting to player island"
+  poseidon.island.info: 
+    default: true
+    description: "Let the player check other players info"
+  poseidon.island.language: 
+    default: true
+    description: "Player can select a language"
+  poseidon.island.lock: 
+    default: true
+    description: "Allows island locking"
+  poseidon.island.name: 
+    default: true
+    description: "Player can set the name of their island"
+  poseidon.island.near: 
+    default: true
+    description: "Players can see nearby island names"
+  poseidon.island.reset: 
+    default: true
+    description: "Player can use the island reset or restart command"
+  poseidon.island.sethome: 
+    default: true
+    description: "Let the player use the sethome command"
+  poseidon.island.settings: 
+    default: true
+    description: "Player can see server settings"
+  poseidon.island.spawn: 
+    default: true
+    description: "Player can use the island spawn command if spawn exists"
+  poseidon.island.team: 
+    default: true
+    description: "Let a player use team command"
+  poseidon.island.team.accept: 
+    default: true
+    description: "Let a player accept invitations"
+  poseidon.island.team.coop: 
+    default: true
+    description: "Let a player use team coop commands"
+  poseidon.island.team.invite: 
+    default: true
+    description: "Let a player invite others"
+  poseidon.island.team.kick: 
+    default: true
+    description: "Let a player kick team members"
+  poseidon.island.team.leave: 
+    default: true
+    description: "Let a player leave the team"
+  poseidon.island.team.promote: 
+    default: true
+    description: "Let a player use promote commands"
+  poseidon.island.team.reject: 
+    default: true
+    description: "Let a player reject invites"
+  poseidon.island.team.setowner: 
+    default: true
+    description: "Let a player change the team owner"
+  poseidon.island.team.trust: 
+    default: true
+    description: "Let a player use team trust commands"
+  poseidon.mod.bypassban: 
+    default: op
+    description: "Bypasses island ban"
+  poseidon.mod.bypasscooldowns: 
+    default: op
+    description: "Allow moderator to bypass cooldowns"
+  poseidon.mod.bypassdelays: 
+    default: op
+    description: "Allow moderator to bypass delays"
+  poseidon.mod.bypassexpel: 
+    default: op
+    description: "Allow moderator to bypass island expulsion"
+  poseidon.mod.bypasslock: 
+    default: op
+    description: "Bypasses an island lock"
+  poseidon.mod.bypassprotect: 
+    default: op
+    description: "Allow moderator to bypass island protection"
+  poseidon.mod.clearreset: 
+    default: false
+    description: "Allow clearing of island reset limit"
+  poseidon.mod.info: 
+    default: op
+    description: "Let a moderator see info on a player"
+  poseidon.mod.lock: 
+    default: op
+    description: "Locks or unlocks an island"
+  poseidon.mod.noburn: 
+    default: op
+    description: "Give mod acid protection"
+  poseidon.mod.team: 
+    default: false
+    description: "Enables modification of teams via kick and add commands"
+  poseidon.settings.*: 
+    default: true
+    description: "Allow use of settings on island"

@@ -1,0 +1,17 @@
+{
+  "uniqueId": "monumental_wreck",
+  "icon": "PRISMARINE",
+  "displayName": "Monumental Wreck",
+  "description": [
+    "A wreck, a monument",
+    "a small monument, and",
+    "trial spawners and",
+    "vaults!"
+  ],
+  "requirePermission": false,
+  "blueprints": {
+    "NORMAL": "wreck-monument"
+  },
+  "slot": 5,
+  "times": 0
+}

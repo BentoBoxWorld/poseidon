@@ -1,0 +1,14 @@
+{
+  "uniqueId": "default",
+  "icon": "TRIDENT",
+  "displayName": "Poseidon's Realm",
+  "description": [
+    "An undersea paradise?"
+  ],
+  "requirePermission": false,
+  "blueprints": {
+    "NORMAL": "island"
+  },
+  "slot": 1,
+  "times": 0
+}
