@@ -57,8 +57,7 @@ public class PoseidonBlockPop extends BlockPopulator {
         if (worldInfo.getEnvironment() == Environment.NORMAL) {
             normalPop(worldInfo, random, chunkX, chunkZ, limitedRegion);
             return;
-        }
-        if (worldInfo.getEnvironment() == Environment.NETHER) {
+        } else {
             netherPop(worldInfo, random, chunkX, chunkZ, limitedRegion);
             return;
         }
@@ -138,7 +137,6 @@ public class PoseidonBlockPop extends BlockPopulator {
                         Location loc = new Location(world, xx, y + 1, zz);
                         MangroveChestBoat b = limitedRegion.createEntity(loc, MangroveChestBoat.class);
                         Villager passenger = limitedRegion.createEntity(loc, Villager.class);
-                        passenger.setProfession(Profession.FISHERMAN);
                         passenger.setVillagerType(Type.SWAMP);
                         b.addPassenger(passenger);
                         limitedRegion.addEntity(b);

@@ -26,6 +26,11 @@ public class ChunkGeneratorWorld extends ChunkGenerator {
     private record FloorMats(Material base, Material top) {
     }
 
+    /**
+     * @param seaHeight sea height
+     * @param seaFloor sea floor
+     * @param waterBlock water material
+     */
     private record WorldConfig(int seaHeight, int seaFloor, Material waterBlock) {
     }
 
@@ -37,7 +42,7 @@ public class ChunkGeneratorWorld extends ChunkGenerator {
     private static final Map<Environment, FloorMats> floorMats = Map.of(Environment.NETHER,
             new FloorMats(Material.NETHERRACK, Material.SOUL_SAND), Environment.NORMAL,
             new FloorMats(Material.SANDSTONE, Material.SAND), Environment.THE_END,
-            new FloorMats(Material.END_STONE, Material.END_STONE));
+            new FloorMats(Material.END_STONE, Material.PURPUR_BLOCK));
 
     private static final int NOISE_MAX = 25;
 
@@ -57,8 +62,9 @@ public class ChunkGeneratorWorld extends ChunkGenerator {
         // Store water & floor settings for each environment
         seaConfig.put(Environment.NORMAL, new WorldConfig(addon.getSettings().getSeaHeight(),
                 addon.getSettings().getSeaFloor(), addon.getSettings().getWaterBlock()));
+        seaConfig.put(Environment.NETHER, new WorldConfig(0, 0, addon.getSettings().getNetherWaterBlock()));
         seaConfig.put(Environment.THE_END, new WorldConfig(addon.getSettings().getEndSeaHeight(),
-                addon.getSettings().getEndSeaHeight(), addon.getSettings().getEndWaterBlock()));
+                addon.getSettings().getEndSeaFloor(), addon.getSettings().getEndWaterBlock()));
         buildProbabilityTree(BASE_BLOCKS);
     }
 
@@ -114,13 +120,14 @@ public class ChunkGeneratorWorld extends ChunkGenerator {
         }
 
         // NETHER environment
-        if (worldInfo.getEnvironment() == Environment.NETHER) {
+        if (worldInfo.getEnvironment() == Environment.NETHER || worldInfo.getEnvironment() == Environment.THE_END) {
+            WorldConfig wc = seaConfig.get(worldInfo.getEnvironment());
             for (int x = 0; x < 16; x++) {
                 for (int z = 0; z < 16; z++) {
                     for (int y = worldInfo.getMinHeight(); y < worldInfo.getMaxHeight() - 1; y++) {
                         BlockData bd = chunkData.getBlockData(x, y, z);
                         if (bd.getMaterial() == Material.AIR) {
-                            chunkData.setBlock(x, y, z, Material.WATER);
+                            chunkData.setBlock(x, y, z, wc.waterBlock());
                         }
                         // Change Lava to Air boundaries to Magma block to prevent obsidian 
                         if (bd.getMaterial() == Material.LAVA

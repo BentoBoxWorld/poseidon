@@ -24,6 +24,8 @@ import world.bentobox.poseidon.generator.ChunkGeneratorWorld;
 import world.bentobox.poseidon.generator.PoseidonBiomeProvider;
 import world.bentobox.poseidon.generator.Pregenerator;
 import world.bentobox.poseidon.listeners.AirEffect;
+import world.bentobox.poseidon.listeners.ExtraMobs;
+import world.bentobox.poseidon.listeners.FishingBoatListener;
 import world.bentobox.poseidon.listeners.NetherMobs;
 
 /**
@@ -99,6 +101,10 @@ public class Poseidon extends GameModeAddon {
         registerListener(new NetherMobs(this));
         // Acid Effects
         registerListener(new AirEffect(this));
+        // Extra Mobs
+        registerListener(new ExtraMobs(this));
+        // Fishing boats
+        registerListener(new FishingBoatListener(this));
     }
 
     @Override

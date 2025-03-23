@@ -135,7 +135,7 @@ public class Settings implements WorldSettings {
     @ConfigComment("Admins can change protection sizes for players individually using /acid range set <player> <new range>")
     @ConfigComment("or set this permission: poseidon.realm.range.<number>")
     @ConfigEntry(path = "world.protection-range", overrideOnChange = true)
-    private int islandProtectionRange = 100;
+    private int islandProtectionRange = 200;
 
     @ConfigComment("Start realms at these coordinates. This is where new realms will start in the")
     @ConfigComment("world. These must be a factor of your realm distance, but the plugin will auto")
@@ -265,10 +265,10 @@ public class Settings implements WorldSettings {
     @ConfigComment("Option will simulate vanilla portal mechanics that links portals together")
     @ConfigComment("or creates a new portal, if there is not a portal in that dimension.")
     @ConfigEntry(path = "world.nether.create-and-link-portals")
-    private boolean makeNetherPortals = false;
+    private boolean makeNetherPortals = true;
 
     // End
-    @ConfigComment("End Nether - if this is false, the end world will not be made and access to")
+    @ConfigComment("The End - if this is false, the end world will not be made and access to")
     @ConfigComment("the end will not occur. Other plugins may still enable portal usage.")
     @ConfigEntry(path = "world.end.generate")
     private boolean endGenerate = true;
@@ -282,6 +282,11 @@ public class Settings implements WorldSettings {
     @ConfigEntry(path = "world.end.sea-height", needsReset = true)
     private int endSeaHeight = 80;
     
+    @ConfigComment("Sea floor in The End. Only operates if end realms is true.")
+    @ConfigComment("Changing mid-game will cause problems!")
+    @ConfigEntry(path = "world.end.sea-floor", needsReset = true)
+    private int endSeaFloor = 0;
+
     @ConfigComment("Water block. This should usually stay as WATER, but may be LAVA for fun")
     @ConfigEntry(path = "world.end.water-block", needsReset = true)
     private Material endWaterBlock = Material.WATER;
@@ -2025,6 +2030,24 @@ public class Settings implements WorldSettings {
      */
     public void setFisherman(double fisherman) {
         this.fisherman = fisherman;
+    }
+
+    public int getExtraMobChance() {
+        return 100;
+    }
+
+    /**
+     * @return the endSeaFloor
+     */
+    public int getEndSeaFloor() {
+        return endSeaFloor;
+    }
+
+    /**
+     * @param endSeaFloor the endSeaFloor to set
+     */
+    public void setEndSeaFloor(int endSeaFloor) {
+        this.endSeaFloor = endSeaFloor;
     }
 
 }
