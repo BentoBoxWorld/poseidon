@@ -6,4 +6,3 @@ Build your underwater realm, from coral-covered castles to sprawling aquatic cit
 The air burns, and every step on land is a gamble with your life. Can you master the art of crossing worlds? Will you stay true to the sea or venture into the unknown for rare resources and unimaginable risks?
 
 In Poseidon, the challenge is to survive, create, and thrive in this underwater odyssey. The ocean is your home. Make it extraordinary—if you can!
-
