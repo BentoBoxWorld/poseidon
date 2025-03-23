@@ -2,12 +2,15 @@ package world.bentobox.poseidon.generator;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.Vector;
+import org.eclipse.jdt.annotation.NonNull;
 
 import world.bentobox.bentobox.util.Util;
 import world.bentobox.poseidon.Poseidon;
@@ -97,18 +100,33 @@ public class Pregenerator {
             return;
         }
         addon.log("Pregenerating chunk at (" + chunkX + ", " + chunkZ + ")...");
-        Util.getChunkAtAsync(world, chunkX, chunkZ).thenAccept(chunk -> {
-            if (generateContinuously) {
-                isRunning = false;
-                return;
-            } else {
-                Bukkit.getScheduler().runTaskLater(addon.getPlugin(), () -> isRunning = false, delayTicks);
-            }
-        }).exceptionally(throwable -> {
-            Bukkit.getScheduler().runTask(addon.getPlugin(), () -> addon
-                    .log("Failed to generate chunk at (" + chunkX + ", " + chunkZ + "): " + throwable.getMessage()));
-            return null;
-        });
+        Util.getChunkAtAsync(world, chunkX, chunkZ)
+                .thenRun(() -> preNether(chunkX, chunkZ).thenRun(() -> preEnd(chunkX, chunkZ).thenRun(() -> {
+                    if (generateContinuously) {
+                        isRunning = false;
+                        return;
+                    } else {
+                        Bukkit.getScheduler().runTaskLater(addon.getPlugin(), () -> isRunning = false, delayTicks);
+                    }
+                }))).exceptionally(throwable -> {
+                    Bukkit.getScheduler().runTask(addon.getPlugin(), () -> addon.log(
+                            "Failed to generate chunk at (" + chunkX + ", " + chunkZ + "): " + throwable.getMessage()));
+                    return null;
+                });
+    }
+
+    private @NonNull CompletableFuture<Chunk> preEnd(int chunkX, int chunkZ) {
+        if (addon.getEndWorld() == null) {
+            return CompletableFuture.completedFuture(null);
+        }
+        return Util.getChunkAtAsync(addon.getEndWorld(), chunkX, chunkZ);
+    }
+
+    private @NonNull CompletableFuture<Chunk> preNether(int chunkX, int chunkZ) {
+        if (addon.getNetherWorld() == null) {
+            return CompletableFuture.completedFuture(null);
+        }
+        return Util.getChunkAtAsync(addon.getNetherWorld(), chunkX, chunkZ);
     }
 
     /**
