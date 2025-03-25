@@ -32,6 +32,10 @@ Welcome to a world where the ocean is both your sanctuary and your greatest thre
 7. **(Optional)** Tweak `config.yml` or use the admin settings GUI.
     - Major changes may require deleting the database and resetting worlds.
 
+## Game command
+
+The default game command is `/poseidon` or `/po` for short. The admin command is `/padmin`.
+
 ## ⚠️ Notes
 
 - The End world is currently **underdeveloped**.
