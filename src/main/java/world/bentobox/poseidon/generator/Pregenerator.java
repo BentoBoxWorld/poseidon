@@ -12,6 +12,7 @@ import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.Vector;
 import org.eclipse.jdt.annotation.NonNull;
 
+import world.bentobox.bentobox.BentoBox;
 import world.bentobox.bentobox.util.Util;
 import world.bentobox.poseidon.Poseidon;
 
@@ -29,8 +30,8 @@ public class Pregenerator {
     public Pregenerator(Poseidon addon) {
         this.addon = addon;
         this.isRunning = false;
-        this.generateContinuously = true;
-        this.delayTicks = 20L; // Default delay of 1 second
+        this.generateContinuously = addon.getSettings().isPreGenContinuous();
+        this.delayTicks = Long.valueOf(addon.getSettings().getPregenDelay());
     }
 
     /**
@@ -44,7 +45,7 @@ public class Pregenerator {
             addon.log("Pregeneration is already running.");
             return;
         }
-        addon.log("Starting pregeneration...");
+        addon.log("Starting pregeneration of up to " + additionalIslandsToGenerate + " realms");
 
         long currentIslandCount = addon.getIslands().getIslandCount(world);
         long totalIslandsToGenerate = currentIslandCount + additionalIslandsToGenerate;

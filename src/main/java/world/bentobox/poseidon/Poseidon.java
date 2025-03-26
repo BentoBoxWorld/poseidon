@@ -149,7 +149,7 @@ public class Poseidon extends GameModeAddon {
         }
         // Pregen
         Pregenerator pregen = new Pregenerator(this);
-        pregen.start(getOverWorld(), 10);
+        pregen.start(getOverWorld(), getSettings().getPregenNumber());
     }
 
     /**

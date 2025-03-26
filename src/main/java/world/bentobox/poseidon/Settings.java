@@ -36,6 +36,23 @@ public class Settings implements WorldSettings {
 
     // ---------------------------------------------
 
+    // Pregen
+    @ConfigComment("Pregeneration is very important otherwise there can be lag for players. The pregenerator")
+    @ConfigComment("will generate chunks around potential starting points out to the view distance of the server.")
+    @ConfigComment("Pregeneration is done for the overworld, the nether, and the end.")
+    @ConfigComment("")
+    @ConfigComment("Pregeneration: Continuous or not. Continuous will not wait between pre-generations.")
+    @ConfigEntry(path = "poseidon.pregeneration.continuous")
+    private boolean preGenContinuous = false;
+
+    @ConfigComment("Pregeneration: Delay in ticks between chunk generations if not continuous")
+    @ConfigEntry(path = "poseidon.pregeneration.delay")
+    private int pregenDelay = 20;
+
+    @ConfigComment("Pregeneration: How many realms to pregenerate")
+    @ConfigEntry(path = "poseidon.pregeneration.number")
+    private int pregenNumber = 10;
+
     // Air
     @ConfigComment("The time a player can be out of the water without suffering in seconds.")
     @ConfigEntry(path = "poseidon.air-effect.grace-period")
@@ -2048,6 +2065,60 @@ public class Settings implements WorldSettings {
      */
     public void setEndSeaFloor(int endSeaFloor) {
         this.endSeaFloor = endSeaFloor;
+    }
+
+    /**
+     * @return the preGenContinuous
+     */
+    public boolean isPreGenContinuous() {
+        return preGenContinuous;
+    }
+
+    /**
+     * @param preGenContinuous the preGenContinuous to set
+     */
+    public void setPreGenContinuous(boolean preGenContinuous) {
+        this.preGenContinuous = preGenContinuous;
+    }
+    
+    /**
+     * @return the pregenDelay
+     */
+    public int getPregenDelay() {
+        if (pregenDelay < 1) {
+            pregenDelay = 1;
+        }
+        return pregenDelay;
+    }
+    
+    /**
+     * @param pregenDelay the pregenDelay to set
+     */
+    public void setPregenDelay(int pregenDelay) {
+        if (pregenDelay < 1) {
+            pregenDelay = 1;
+        }
+        this.pregenDelay = pregenDelay;
+    }
+
+    /**
+     * @return the pregenNumber
+     */
+    public int getPregenNumber() {
+        if (pregenNumber < 0) {
+            pregenNumber = 0;
+        }
+        return pregenNumber;
+    }
+    
+    /**
+     * @param pregenNumber the pregenNumber to set
+     */
+    public void setPregenNumber(int pregenNumber) {
+        if (pregenNumber < 0) {
+            pregenNumber = 0;
+        }
+        this.pregenNumber = pregenNumber;
     }
 
 }
