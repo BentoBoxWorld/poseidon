@@ -37,7 +37,7 @@ world:
   turtle-eggs: 25
   # Chance of fisherman spawning on a water block in a chunk %
   fisherman: 1.0
-  # Realm tree types. List type and protbability of growing relative to others in the list
+  # Realm tree types. List type and probability of growing relative to others in the list
   realm-tree-types:
     BROWN_MUSHROOM: 0.1
     TALL_MANGROVE: 0.05
