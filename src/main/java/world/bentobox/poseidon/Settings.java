@@ -114,7 +114,7 @@ public class Settings implements WorldSettings {
     @ConfigEntry(path = "world.fisherman")
     private double fisherman = 0.01;
 
-    @ConfigComment("Realm tree types. List type and protbability of growing relative to others in the list")
+    @ConfigComment("Realm tree types. List type and probability of growing relative to others in the list")
     @ConfigEntry(path = "world.realm-tree-types")
     private Map<TreeType, Double> treeTypes;
 
