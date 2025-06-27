@@ -119,10 +119,6 @@
             <id>codemc-repo</id>
             <url>https://repo.codemc.io/repository/bentoboxworld/</url>
         </repository>
-        <repository>
-            <id>ess-repo</id>
-            <url>https://ci.ender.zone/plugin/repository/everything/</url>
-        </repository>
     </repositories>
 
 
@@ -167,13 +163,6 @@
             <groupId>org.eclipse.jdt</groupId>
             <artifactId>org.eclipse.jdt.annotation</artifactId>
             <version>2.2.600</version>
-        </dependency>
-        <!-- EssentialsX -->
-        <dependency>
-            <groupId>net.ess3</groupId>
-            <artifactId>EssentialsX</artifactId>
-            <version>2.17.2</version>
-            <scope>provided</scope>
         </dependency>
     </dependencies>
 
