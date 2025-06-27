@@ -59,7 +59,7 @@ public class AirEffect implements Listener {
     void damagePlayer(Player player) {
         // Reduce player's air
         player.setRemainingAir(0);
-        player.damage(addon.getSettings().getAirEffectDamage(), DamageSource.builder(DamageType.WIND_CHARGE).build());
+        player.damage(addon.getSettings().getAirEffectDamage(), DamageSource.builder(DamageType.DRY_OUT).build());
     }
 
     enum WaterBlock {
