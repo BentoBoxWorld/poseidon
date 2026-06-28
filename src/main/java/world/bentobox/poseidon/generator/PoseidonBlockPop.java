@@ -50,6 +50,7 @@ public class PoseidonBlockPop extends BlockPopulator {
     private int treeDensity;
     private int turtleEggs;
     private double fisherman;
+    private final Difficulty configuredDifficulty;
 
     public PoseidonBlockPop(Poseidon addon) {
         maxMobsPerChunk = addon.getSettings().getMobsPerChunk();
@@ -58,6 +59,7 @@ public class PoseidonBlockPop extends BlockPopulator {
         treeDensity = addon.getSettings().getIslandTrees();
         turtleEggs = addon.getSettings().getTurtleEggs();
         fisherman = addon.getSettings().getFisherman() / 25600D; // 16 x 16 blocks in chunk
+        configuredDifficulty = addon.getSettings().getDifficulty();
     }
 
     @Override
@@ -77,9 +79,11 @@ public class PoseidonBlockPop extends BlockPopulator {
         int startX = chunkX << 4;
         int startZ = chunkZ << 4;
 
-        // Monsters cannot be spawned on Peaceful difficulty - doing so throws an exception
+        // Monsters cannot be spawned on Peaceful difficulty - doing so throws an exception.
+        // The world may not be registered with Bukkit yet (this populator runs during world
+        // creation), so fall back to the addon's configured difficulty when it is unavailable.
         World world = Bukkit.getWorld(worldInfo.getUID());
-        boolean peaceful = world != null && world.getDifficulty() == Difficulty.PEACEFUL;
+        boolean peaceful = (world != null ? world.getDifficulty() : configuredDifficulty) == Difficulty.PEACEFUL;
 
         // Spawn a limited number of water mobs
         for (int i = 0; i < maxMobsPerChunk; i++) {
@@ -101,9 +105,15 @@ public class PoseidonBlockPop extends BlockPopulator {
                     continue;
                 }
 
-                // Spawn the mob at the water block's location
-                Location spawnLocation = new Location(world, x, y, z);
-                limitedRegion.spawnEntity(spawnLocation, mobType);
+                // Spawn the mob at the water block's location. Spawning is guarded defensively:
+                // a failure here (e.g. monsters on Peaceful) must not propagate and crash the
+                // chunk system during world generation.
+                try {
+                    Location spawnLocation = new Location(world, x, y, z);
+                    limitedRegion.spawnEntity(spawnLocation, mobType);
+                } catch (IllegalStateException e) {
+                    // Mob could not be spawned here (e.g. difficulty restriction) - skip it
+                }
             }
         }
 
