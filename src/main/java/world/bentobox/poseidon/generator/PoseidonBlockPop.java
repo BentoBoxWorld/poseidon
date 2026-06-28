@@ -5,9 +5,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.NavigableMap;
 import java.util.Random;
+import java.util.Set;
 import java.util.TreeMap;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Difficulty;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.TreeType;
@@ -34,6 +36,12 @@ public class PoseidonBlockPop extends BlockPopulator {
     private static final List<EntityType> WATER_MOBS = List.of(EntityType.DROWNED, EntityType.GUARDIAN,
             EntityType.ELDER_GUARDIAN, EntityType.GLOW_SQUID, EntityType.SQUID, EntityType.DROWNED, EntityType.DROWNED,
             EntityType.DROWNED, EntityType.GLOW_SQUID);
+    /**
+     * Monsters in {@link #WATER_MOBS} that cannot be spawned on Peaceful difficulty.
+     * Attempting to spawn these on Peaceful throws an IllegalStateException.
+     */
+    private static final Set<EntityType> MONSTERS = Set.of(EntityType.DROWNED, EntityType.GUARDIAN,
+            EntityType.ELDER_GUARDIAN);
     private static final Random RANDOM = new Random();
     private static NavigableMap<Double, TreeType> treeMap = new TreeMap<>();
 
@@ -42,6 +50,7 @@ public class PoseidonBlockPop extends BlockPopulator {
     private int treeDensity;
     private int turtleEggs;
     private double fisherman;
+    private final Difficulty configuredDifficulty;
 
     public PoseidonBlockPop(Poseidon addon) {
         maxMobsPerChunk = addon.getSettings().getMobsPerChunk();
@@ -50,6 +59,7 @@ public class PoseidonBlockPop extends BlockPopulator {
         treeDensity = addon.getSettings().getIslandTrees();
         turtleEggs = addon.getSettings().getTurtleEggs();
         fisherman = addon.getSettings().getFisherman() / 25600D; // 16 x 16 blocks in chunk
+        configuredDifficulty = addon.getSettings().getDifficulty();
     }
 
     @Override
@@ -69,6 +79,12 @@ public class PoseidonBlockPop extends BlockPopulator {
         int startX = chunkX << 4;
         int startZ = chunkZ << 4;
 
+        // Monsters cannot be spawned on Peaceful difficulty - doing so throws an exception.
+        // The world may not be registered with Bukkit yet (this populator runs during world
+        // creation), so fall back to the addon's configured difficulty when it is unavailable.
+        World world = Bukkit.getWorld(worldInfo.getUID());
+        boolean peaceful = (world != null ? world.getDifficulty() : configuredDifficulty) == Difficulty.PEACEFUL;
+
         // Spawn a limited number of water mobs
         for (int i = 0; i < maxMobsPerChunk; i++) {
             // Randomly select a block within the chunk
@@ -84,9 +100,20 @@ public class PoseidonBlockPop extends BlockPopulator {
                 EntityType mobType = WATER_MOBS.stream().skip(random.nextInt(WATER_MOBS.size())).findFirst()
                         .orElse(EntityType.DROWNED);
 
-                // Spawn the mob at the water block's location
-                Location spawnLocation = new Location(Bukkit.getWorld(worldInfo.getUID()), x, y, z);
-                limitedRegion.spawnEntity(spawnLocation, mobType);
+                // Skip monsters on Peaceful difficulty as they cannot be spawned
+                if (peaceful && MONSTERS.contains(mobType)) {
+                    continue;
+                }
+
+                // Spawn the mob at the water block's location. Spawning is guarded defensively:
+                // a failure here (e.g. monsters on Peaceful) must not propagate and crash the
+                // chunk system during world generation.
+                try {
+                    Location spawnLocation = new Location(world, x, y, z);
+                    limitedRegion.spawnEntity(spawnLocation, mobType);
+                } catch (IllegalStateException e) {
+                    // Mob could not be spawned here (e.g. difficulty restriction) - skip it
+                }
             }
         }
 
