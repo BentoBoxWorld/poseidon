@@ -608,12 +608,18 @@ realm:
       require-confirmation: true
   deaths:
     # Whether deaths are counted or not.
+    # If false, BentoBox does not count deaths and the Level addon does not record deaths against realms.
     counted: true
     # Maximum number of deaths to count. The death count can be used by add-ons.
+    # Since Level 2.29.0 this also caps how many deaths each member can contribute to a realm's death penalty.
     max: 10
-    # When a player joins a team, reset their death count
+    # When a player joins a team, reset their death count.
+    # This only affects BentoBox's own per-player death count, used by the %poseidon_deaths% placeholder.
+    # Since Level 2.29.0, realm levels use per-realm death tracking and are not affected by this setting.
     team-join-reset: true
-    # Reset player death count when they start a new realm or reset and realm
+    # Reset player death count when they start a new realm or reset a realm.
+    # This only affects BentoBox's own per-player death count.
+    # Since Level 2.29.0 the Level addon clears a realm's own death record automatically when it is reset or deleted.
     reset-on-new-realm: true
   customranks: {}
 protection:
