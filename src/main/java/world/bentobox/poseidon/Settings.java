@@ -567,18 +567,24 @@ public class Settings implements WorldSettings {
 
     // Deaths
     @ConfigComment("Whether deaths are counted or not.")
+    @ConfigComment("If false, BentoBox does not count deaths and the Level addon does not record deaths against realms.")
     @ConfigEntry(path = "realm.deaths.counted")
     private boolean deathsCounted = true;
 
     @ConfigComment("Maximum number of deaths to count. The death count can be used by add-ons.")
+    @ConfigComment("Since Level 2.29.0 this also caps how many deaths each member can contribute to a realm's death penalty.")
     @ConfigEntry(path = "realm.deaths.max")
     private int deathsMax = 10;
 
-    @ConfigComment("When a player joins a team, reset their death count")
+    @ConfigComment("When a player joins a team, reset their death count.")
+    @ConfigComment("This only affects BentoBox's own per-player death count, used by the %poseidon_deaths% placeholder.")
+    @ConfigComment("Since Level 2.29.0, realm levels use per-realm death tracking and are not affected by this setting.")
     @ConfigEntry(path = "realm.deaths.team-join-reset")
     private boolean teamJoinDeathReset = true;
 
-    @ConfigComment("Reset player death count when they start a new realm or reset and realm")
+    @ConfigComment("Reset player death count when they start a new realm or reset a realm.")
+    @ConfigComment("This only affects BentoBox's own per-player death count.")
+    @ConfigComment("Since Level 2.29.0 the Level addon clears a realm's own death record automatically when it is reset or deleted.")
     @ConfigEntry(path = "realm.deaths.reset-on-new-realm")
     private boolean deathsResetOnNewIsland = true;
 
