@@ -81,6 +81,15 @@ permissions:
   poseidon.island.sethome: 
     default: true
     description: "Let the player use the sethome command"
+  poseidon.island.deletehome:
+    description: Allow use of '/po deletehome' command - delete a home location
+    default: true
+  poseidon.island.homes:
+    description: Allow use of '/po homes' command - list your homes
+    default: true
+  poseidon.island.renamehome:
+    description: Allow use of '/po renamehome' command - rename a home location
+    default: true
   poseidon.island.settings: 
     default: true
     description: "Player can see server settings"
