@@ -63,7 +63,7 @@
         <!-- This allows to change between versions. -->
         <build.version>1.1.1</build.version>
         <!-- Sonar Cloud -->
-        <sonar.projectKey>BentoBoxWorld_Poseidon</sonar.projectKey>
+        <sonar.projectKey>BentoBoxWorld_poseidon</sonar.projectKey>
         <sonar.organization>bentobox-world</sonar.organization>
         <sonar.host.url>https://sonarcloud.io</sonar.host.url>
     </properties>
