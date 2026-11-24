@@ -1,5 +1,8 @@
 # 🌊 Poseidon
 
+<!-- BentoBox stats badges: https://download.bentobox.world/admin (Badges tab) -->
+[![Servers](https://download.bentobox.world/badge/Poseidon/servers.svg)](https://download.bentobox.world/) [![Downloads](https://download.bentobox.world/badge/Poseidon/downloads.svg)](https://download.bentobox.world/) [![Minecraft](https://download.bentobox.world/badge/Poseidon/mc.svg)](https://download.bentobox.world/)
+
 **Poseidon** is an immersive underwater survival experience for Minecraft. Stranded after a mysterious shipwreck, you awaken with the uncanny ability to breathe underwater—but there's a catch. Like a shark, you must keep moving to survive.
 
 Welcome to a world where the ocean is both your sanctuary and your greatest threat. From deep-sea ruins to glowing coral cities, Poseidon challenges you to survive, build, and explore in a realm where the sea is your only constant—until you dare to set foot on the dreaded, burning land above.
